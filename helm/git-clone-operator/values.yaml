@@ -1,0 +1,7 @@
+
+image:
+    repository: ghcr.io/riotkit-org/git-clone-operator
+    tag: "" # defaults to {{ .Release.appVersion }}
+
+# Only namespaces that has label 'riotkit.org/git-clone-operator: true'
+onlyLabelledNamespaces: false

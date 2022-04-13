@@ -1,0 +1,37 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+    name: {{ include "git-clone-operator.fullname" . }}
+    labels:
+        {{- include "git-clone-operator.labels" . | nindent 8 }}
+webhooks:
+    - name: {{ include "git-clone-operator.fullname" . }}
+      failurePolicy: Ignore  # do not block whole cluster
+      {{- if .Values.onlyLabelledNamespaces }}
+      namespaceSelector:
+          matchLabels:
+              riotkit.org/git-clone-operator: true
+      {{- end }}
+      objectSelector:
+          matchLabels:
+              riotkit.org/git-clone-operator: true
+      rules:
+          - apiGroups: [""]
+            apiVersions: ["v1"]
+            operations: ["CREATE"]
+            resources: ["pods"]
+            scope: "Namespaced"
+      clientConfig:
+          service:
+              namespace: {{ .Release.namespace }}
+              name: {{ include "git-clone-operator.fullname" . }}
+              path: /mutate-pods
+              {{- if .Values.tls.enabled }}
+              port: 443
+          caBundle: |
+              {{ .Values.tls.caBundle | nindent 14 }}
+              {{- end }}
+      admissionReviewVersions: ["v1"]
+      sideEffects: NoneOnDryRun
+      timeoutSeconds: 2

@@ -7,6 +7,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func NewCheckCommand() *cobra.Command {
+	command := &cobra.Command{
+		Use:   "check-binary",
+		Short: "Does nothing. Allows to check if this binary requires libc at all",
+		Run: func(command *cobra.Command, args []string) {
+			println("Looks OK")
+			return
+		},
+	}
+	return command
+}
+
 func Main() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "git-clone-operator",
@@ -20,6 +32,7 @@ func Main() *cobra.Command {
 	}
 	cmd.AddCommand(serve.NewServeCommand())
 	cmd.AddCommand(checkout.NewCheckoutCommand())
+	cmd.AddCommand(NewCheckCommand())
 
 	return cmd
 }

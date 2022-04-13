@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+    labels:
+        riotkit.org/git-clone-operator: true
+    annotations:
+        git-clone-operator/url: https://github.com/jenkins-x/go-scm
+        git-clone-operator/path: /workspace/source
+        git-clone-operator/owner: 1000
+        git-clone-operator/group: 1000
+spec:
+    # ...

@@ -24,7 +24,7 @@ type Command struct {
 }
 
 func (c *Command) Run() error {
-	if err := c.validate(); err != nil {
+	if err := c.checkAndPrepareInputs(); err != nil {
 		return errors.Wrap(err, "Validation failed")
 	}
 
@@ -100,6 +100,7 @@ func (c *Command) checkout(url string) (*git.Repository, error) {
 	}
 }
 
+// fetch is making sure that the REMOTE is properly connected, then does a fetch on such remote
 func (c *Command) fetch(repository *git.Repository, remoteName string, url string) error {
 	// make sure the remote is configured
 	remotes, _ := repository.Remotes()
@@ -152,6 +153,7 @@ func (c *Command) createReferenceName(repository *git.Repository, ref string) (s
 	return ref, false
 }
 
+// isExistingRepository detects if repository already exists by checking if ".git" directory exists
 func (c *Command) isExistingRepository() bool {
 	if _, err := os.Stat(c.Path + "/.git"); errors.Is(err, os.ErrNotExist) {
 		return false
@@ -173,6 +175,7 @@ func (c *Command) cleanUpRemotes(repository *git.Repository) error {
 	return nil
 }
 
+// getUrlWithCredentials makes sure that credentials are in the URL (token, username)
 func (c *Command) getUrlWithCredentials() (string, error) {
 	u, err := url.Parse(c.Url)
 	if err != nil {
@@ -181,7 +184,8 @@ func (c *Command) getUrlWithCredentials() (string, error) {
 	return fmt.Sprintf("%s://%s:%s@%s:%s/%s", u.Scheme, c.Username, c.Token, u.Hostname(), u.Port(), u.Path), nil
 }
 
-func (c *Command) validate() error {
+// checkAndPrepareInputs performs a pre-validation and mutation of input parameters
+func (c *Command) checkAndPrepareInputs() error {
 	if c.Username == "" {
 		if os.Getenv("GIT_USER") != "" {
 			c.Username = os.Getenv("GIT_USER")

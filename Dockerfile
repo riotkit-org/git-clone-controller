@@ -1,6 +1,6 @@
-# syntax=docker/dockerfile:experimental
+# syntax = docker/dockerfile:1.2
 # ---
-FROM golang:1.16 AS build
+FROM golang:1.17 AS build
 
 ENV GOOS=linux
 ENV GOARCH=amd64
@@ -9,13 +9,13 @@ ENV CGO_ENABLED=0
 WORKDIR /work
 COPY . /work
 
-# Build admission-webhook
 RUN --mount=type=cache,target=/root/.cache/go-build,sharing=private \
-  go build -o bin/admission-webhook .
+  go build -o bin/git-clone-operator .
 
 # ---
 FROM scratch AS run
 
-COPY --from=build /work/bin/admission-webhook /usr/local/bin/
+COPY --from=build /work/bin/git-clone-operator /usr/local/bin/
+RUN git-clone-operator check-binary
 
-CMD ["admission-webhook"]
+CMD ["git-clone-operator"]
