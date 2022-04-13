@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/riotkit-org/git-clone-operator/cmd/checkout"
 	"github.com/riotkit-org/git-clone-operator/cmd/serve"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

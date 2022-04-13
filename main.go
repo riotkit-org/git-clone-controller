@@ -1,11 +1,12 @@
 package main
 
 import (
+	"github.com/riotkit-org/git-clone-operator/cmd"
 	"os"
 )
 
 func main() {
-	command := generate.Main()
+	command := cmd.Main()
 	args := os.Args
 
 	if args != nil {

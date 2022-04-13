@@ -22,7 +22,7 @@ func NewServeCommand() *cobra.Command {
 
 	command.Flags().StringVarP(&app.LogLevel, "log-level", "l", "info", "Logging level: error, warn, info, debug")
 	command.Flags().BoolVarP(&app.LogJSON, "log-json", "", false, "Log in JSON format")
-	command.Flags().BoolVarP(&app.TLS, "tls", "-t", false, "Use TLS (requires certificates)")
+	command.Flags().BoolVarP(&app.TLS, "tls", "t", false, "Use TLS (requires certificates)")
 
 	return command
 }
