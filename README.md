@@ -1,6 +1,8 @@
 GIT clone operator
 ------------------
 
+**WARNING: This project is unreleased, the first release is a WORK IN PROGRESS**
+
 Mutation webhook handler, injects initContainer with a properly configured `git` container that does a clone or checkout, taking care about permissions.
 
 
