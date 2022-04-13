@@ -1,5 +1,5 @@
 GIT clone operator
-------------------
+==================
 
 **WARNING: This project is unreleased, the first release is a WORK IN PROGRESS**
 
