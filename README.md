@@ -33,6 +33,7 @@ Roadmap
 - [ ] Specifying user id (owner) of files in workspace
 - [ ] CLI command `git-clone-operator clone ...` and single Dockerfile for both initContainer and operator
 - [ ] Helm
+- [ ] Add configurable security context - runAs and filesystem permissions
 
 ### v2
 

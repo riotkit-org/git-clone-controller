@@ -7,6 +7,6 @@ RUN chmod +x /git-clone-operator
 FROM gcr.io/distroless/base
 
 COPY --from=build /git-clone-operator /usr/bin/git-clone-operator
-RUN git-clone-operator check-binary
+RUN ["/usr/bin/git-clone-operator", "check-binary"]
 
-CMD ["git-clone-operator"]
+ENTRYPOINT ["/usr/bin/git-clone-operator"]
