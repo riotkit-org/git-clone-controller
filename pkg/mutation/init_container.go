@@ -9,13 +9,13 @@ const InitContainerName = "git-checkout"
 
 // initContainerInjector is a container for the mutation injecting environment vars
 type initContainerInjector struct {
-	Logger   logrus.FieldLogger
-	image    string
-	path     string
-	rev      string
-	gitUrl   string
-	gitToken string
-	userName string
+	Logger      logrus.FieldLogger
+	image       string
+	path        string
+	rev         string
+	gitUrl      string
+	gitToken    string
+	gitUsername string
 }
 
 // Mutate returns a new mutated pod according to set env rules
@@ -28,7 +28,7 @@ func (se initContainerInjector) Mutate(pod *corev1.Pod) (*corev1.Pod, error) {
 		return mutatedPod, nil
 	}
 
-	injectInitContainer(mutatedPod, se.image, se.path, se.rev, se.gitUrl, se.gitToken, se.userName)
+	injectInitContainer(mutatedPod, se.image, se.path, se.rev, se.gitUrl, se.gitToken, se.gitUsername)
 	return mutatedPod, nil
 }
 

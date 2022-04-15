@@ -1,0 +1,101 @@
+{{- if eq .Values.image.tag "" }}
+{{- $tag := .Release.appVersion }}
+{{- else }}
+{{- .Values.image.tag }}
+{{- end }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ include "git-clone-operator.fullname" . }}
+    labels:
+        {{- include "git-clone-operator.labels" . | nindent 8 }}
+spec:
+    replicas: {{ .Values.replicas }}
+    selector:
+        matchLabels:
+            {{- include "git-clone-operator.selectorLabels" . | nindent 10 }}
+    template:
+        metadata:
+          {{- with .Values.podAnnotations }}
+            annotations:
+              {{- toYaml . | nindent 16 }}
+          {{- end }}
+            labels:
+              {{- include "git-clone-operator.selectorLabels" . | nindent 16 }}
+              {{- if eq $tag "latest" | or (eq $tag "snapshot") }}
+                  refreshImageTag: "{{- randAlphaNum 24 | nospace -}}"
+              {{- end }}
+        spec:
+            serviceAccountName: {{ include "git-clone-operator.serviceAccountName" . }}
+            {{- with .Values.podSecurityContext }}
+            securityContext:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            {{- with .Values.nodeSelector }}
+            nodeSelector:
+                {{- toYaml . | nindent 14 }}
+            {{- end }}
+            {{- with .Values.affinity }}
+            affinity:
+                {{- toYaml . | nindent 14 }}
+            {{- end }}
+            {{- with .Values.tolerations }}
+            tolerations:
+                {{- toYaml . | nindent 14 }}
+            {{- end }}
+            containers:
+                - name: webhook-handler
+                  image: {{ .Values.image.repository }}:{{ $tag }}
+                  imagePullPolicy: Always
+                  env:
+                      {{- if .Values.tls.enabled }}
+                      - name: TLS
+                        value: "true"
+                      {{- end }}
+                      {{- with .Values.env }}
+                      {{- range $key, $value := . }}
+                          - name: {{ $key }}
+                            value: "{{ $value }}"
+                      {{- end }}
+                      {{- end }}
+                  {{- if .Values.tls.enabled }}
+                  volumeMounts:
+                      - name: tls
+                        mountPath: "/etc/admission-webhook/tls"
+                        readOnly: true
+                  {{- end }}
+                  ports:
+                      - name: http
+                        containerPort: 8080
+                        protocol: TCP
+                      - name: https
+                        containerPort: 443
+                        protocol: TCP
+                  {{- if .Values.health.liveness.enabled }}
+                  livenessProbe:
+                      {{- with .Values.health.liveness.attributes}}
+                      {{- toYaml . | nindent 22 }}
+                      {{- end}}
+                      httpGet:
+                          path: /health
+                          port: http
+                  {{- end }}
+                  {{- if .Values.health.readiness.enabled }}
+                  readinessProbe:
+                      {{- with .Values.health.readiness.attributes }}
+                      {{- toYaml . | nindent 22 }}
+                      {{- end }}
+                      httpGet:
+                          path: /health
+                          port: http
+                  {{- end }}
+                  resources:
+                    {{- toYaml .Values.resources | nindent 20 }}
+            {{- if .Values.tls.enabled }}
+            volumes:
+                - name: tls
+                  secret:
+                      secretName: {{ include "git-clone-operator.fullname" . }}-tls
+            {{- end }}

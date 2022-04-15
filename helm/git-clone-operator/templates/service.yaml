@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ include "git-clone-operator.fullname" . }}
+    labels:
+        {{- include "git-clone-operator.labels" . | nindent 8 }}
+spec:
+    type: {{ .Values.service.type }}
+    ports:
+        - port: 8080
+          targetPort: http
+          protocol: TCP
+          name: http
+
+        - port: 443
+          targetPort: http
+          protocol: TCP
+          name: http
+    selector:
+        {{- include "git-clone-operator.selectorLabels" . | nindent 8 }}

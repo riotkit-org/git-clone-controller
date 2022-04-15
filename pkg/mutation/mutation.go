@@ -12,11 +12,12 @@ import (
 // Mutator is a container for mutation
 type Mutator struct {
 	Logger *logrus.Entry
+	params *Parameters
 }
 
 // NewMutator returns an initialised instance of Mutator
-func NewMutator(logger *logrus.Entry) *Mutator {
-	return &Mutator{Logger: logger}
+func NewMutator(logger *logrus.Entry, params *Parameters) *Mutator {
+	return &Mutator{Logger: logger, params: params}
 }
 
 // MutatePodPatch returns a json patch containing all the mutations needed for
@@ -32,7 +33,15 @@ func (m *Mutator) MutatePodPatch(pod *corev1.Pod) ([]byte, error) {
 	}
 	log := logrus.WithField("pod_name", podName)
 
-	mutator := initContainerInjector{Logger: log}
+	mutator := initContainerInjector{
+		Logger:      log,
+		image:       m.params.Image,
+		path:        m.params.TargetPath,
+		rev:         m.params.GitRevision,
+		gitUrl:      m.params.GitUrl,
+		gitToken:    m.params.GitToken,
+		gitUsername: m.params.GitUsername,
+	}
 	mutatedPod, mutateErr := mutator.Mutate(pod.DeepCopy())
 	if mutateErr != nil {
 		return nil, errors.Wrap(mutateErr, "Cannot mutate pod")

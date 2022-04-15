@@ -7,17 +7,27 @@ import (
 	"github.com/riotkit-org/git-clone-operator/pkg/admission"
 	"github.com/sirupsen/logrus"
 	admissionv1 "k8s.io/api/admission/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 	"net/http"
+	"os"
 )
 
 type Command struct {
 	LogLevel string
 	TLS      bool
 	LogJSON  bool
+
+	DefaultImage       string
+	DefaultGitUsername string
+	DefaultGitToken    string
+
+	client *kubernetes.Clientset
 }
 
 func (c *Command) Run() error {
 	c.setLogger()
+	c.client = initClient()
 
 	// handle our core application
 	http.HandleFunc("/mutate-pods", c.ServeMutatePods)
@@ -55,9 +65,15 @@ func (c *Command) ServeMutatePods(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	adm := admission.Admitter{
+	adm := admission.ProcessingService{
 		Logger:  logger,
 		Request: in.Request,
+
+		DefaultImage:       c.DefaultImage,
+		DefaultGitUsername: c.DefaultGitUsername,
+		DefaultGitToken:    c.DefaultGitToken,
+
+		Client: c.client,
 	}
 
 	out, err := adm.MutatePodReview()
@@ -122,4 +138,21 @@ func (c *Command) parseRequest(r http.Request) (*admissionv1.AdmissionReview, er
 	}
 
 	return &a, nil
+}
+
+func initClient() *kubernetes.Clientset {
+	kubeConfig := os.Getenv("HOME") + "/.kube/config"
+	if os.Getenv("KUBECONFIG") != "" {
+		kubeConfig = os.Getenv("KUBECONFIG")
+	}
+	config, err := clientcmd.BuildConfigFromFlags("", kubeConfig)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	clientSet, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+	return clientSet
 }

@@ -5,3 +5,37 @@ image:
 
 # Only namespaces that has label 'riotkit.org/git-clone-operator: true'
 onlyLabelledNamespaces: false
+
+tls:
+    enabled: false
+    caBundle: |
+        ...
+    createSecret: true
+    secretName: "git-clone-operator-tls"
+        
+replicas: 1
+podAnnotations: {}
+podSecurityContext: {}
+
+serviceAccount:
+    create: true
+    name: git-clone-operator-sa
+    annotations: {}
+
+env:
+    LOG_JSON: false
+    LOG_LEVEL: info
+
+health:
+    liveness:
+        enabled: true
+        attributes:
+            failureThreshold: 1
+            terminationGracePeriodSeconds: 10
+    readiness:
+        enabled: true
+        attributes: {}
+
+service:
+    type: ClusterIP
+    port: 8080

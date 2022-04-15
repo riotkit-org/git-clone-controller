@@ -40,7 +40,7 @@ func TestPod(t *testing.T) {
 		},
 	}
 
-	a := Admitter{Request: admreq}
+	a := ProcessingService{Request: admreq}
 	got, err := a.Pod()
 	if err != nil {
 		t.Fatal(err)
