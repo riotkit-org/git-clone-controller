@@ -26,6 +26,14 @@ env:
     LOG_JSON: false
     LOG_LEVEL: info
 
+resources:
+    requests:
+        memory: 16Mi
+        cpu: 0
+    limits:
+        memory: 128Mi
+        cpu: 1
+
 health:
     liveness:
         enabled: true

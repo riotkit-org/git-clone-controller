@@ -14,8 +14,8 @@ spec:
           name: http
 
         - port: 443
-          targetPort: http
+          targetPort: https
           protocol: TCP
-          name: http
+          name: https
     selector:
         {{- include "git-clone-operator.selectorLabels" . | nindent 8 }}

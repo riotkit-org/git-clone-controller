@@ -1,9 +1,3 @@
-{{- if eq .Values.image.tag "" }}
-{{- $tag := .Release.appVersion }}
-{{- else }}
-{{- .Values.image.tag }}
-{{- end }}
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -24,7 +18,7 @@ spec:
           {{- end }}
             labels:
               {{- include "git-clone-operator.selectorLabels" . | nindent 16 }}
-              {{- if eq $tag "latest" | or (eq $tag "snapshot") }}
+              {{- if eq (.Values.image.tag | default .Chart.AppVersion) "latest" | or (eq (.Values.image.tag | default .Chart.AppVersion) "snapshot") }}
                   refreshImageTag: "{{- randAlphaNum 24 | nospace -}}"
               {{- end }}
         spec:
@@ -47,8 +41,9 @@ spec:
             {{- end }}
             containers:
                 - name: webhook-handler
-                  image: {{ .Values.image.repository }}:{{ $tag }}
+                  image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
                   imagePullPolicy: Always
+                  args: ["serve"]
                   env:
                       {{- if .Values.tls.enabled }}
                       - name: TLS
@@ -92,7 +87,7 @@ spec:
                           port: http
                   {{- end }}
                   resources:
-                    {{- toYaml .Values.resources | nindent 20 }}
+                      {{- toYaml .Values.resources | nindent 20 }}
             {{- if .Values.tls.enabled }}
             volumes:
                 - name: tls
