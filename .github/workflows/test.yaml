@@ -1,0 +1,86 @@
+name: Test and release
+on:
+    push:
+
+jobs:
+    test:
+        runs-on: ubuntu-20.04
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+
+            - name: Set up Go
+              uses: actions/setup-go@v3
+              with:
+                  go-version: 1.17
+
+            - name: Build
+              run: "make build"
+
+            - name: Test
+              run: "make coverage"
+
+            - name: SonarCloud Scan
+              uses: sonarsource/sonarcloud-github-action@master
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+            - uses: actions/upload-artifact@v2
+              with:
+                  name: binary
+                  path: .build/b*
+
+    release-binary:
+        runs-on: ubuntu-20.04
+        needs: ["test"]
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        steps:
+            - uses: actions/download-artifact@v2
+              with:
+                  name: binary
+                  path: .build/
+
+            - name: Release binaries to GitHub releases
+              uses: softprops/action-gh-release@v1
+              with:
+                  files: |
+                      .build/git-clone-operator
+                      LICENSE
+
+    release-docker:
+        runs-on: ubuntu-20.04
+        needs: ["test"]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+
+            - uses: actions/download-artifact@v2
+              with:
+                  name: binary
+                  path: .build/
+
+            - name: Login to GitHub Container Registry
+              uses: docker/login-action@v1
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Create docker tags
+              id: meta
+              uses: docker/metadata-action@v3
+              with:
+                  images: ghcr.io/riotkit-org/git-clone-operator
+
+            name: Build and relase docker
+            uses: docker/build-push-action@v2
+            with:
+                context: .
+                push: ${{ github.event_name != 'pull_request' }}
+                tags: ${{ steps.meta.outputs.tags }}
+                labels: ${{ steps.meta.outputs.labels }}
