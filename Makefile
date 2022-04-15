@@ -6,7 +6,8 @@ test:
 .PHONY: build
 build:
 	@echo "\n🔧  Building Go binaries..."
-	GOOS=linux GOARCH=amd64 go build -o bin/git-clone-operator .
+	mkdir -p .build
+	CGO_ENABLED=0 GO111MODULE=on GOOS=linux GOARCH=amd64 go build -o .build/git-clone-operator .
 
 .PHONY: docker-build
 docker-build:
