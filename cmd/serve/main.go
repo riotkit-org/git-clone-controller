@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"github.com/riotkit-org/git-clone-operator/pkg/admission"
 	"github.com/sirupsen/logrus"
 	admissionv1 "k8s.io/api/admission/v1"
@@ -145,6 +146,10 @@ func initClient() *kubernetes.Clientset {
 	if os.Getenv("KUBECONFIG") != "" {
 		kubeConfig = os.Getenv("KUBECONFIG")
 	}
+	if _, err := os.Stat(kubeConfig); errors.Is(err, os.ErrNotExist) {
+		kubeConfig = ""
+	}
+
 	config, err := clientcmd.BuildConfigFromFlags("", kubeConfig)
 	if err != nil {
 		panic(err.Error())
