@@ -31,7 +31,7 @@ jobs:
             - uses: actions/upload-artifact@v2
               with:
                   name: binary
-                  path: .build/b*
+                  path: .build/git-clone-operator
 
     release-binary:
         runs-on: ubuntu-20.04
@@ -48,7 +48,6 @@ jobs:
               with:
                   files: |
                       .build/git-clone-operator
-                      LICENSE
 
     release-docker:
         runs-on: ubuntu-20.04
