@@ -33,15 +33,15 @@ func TestPod(t *testing.T) {
 
 	admreq := &admissionv1.AdmissionRequest{
 		UID:  types.UID("test"),
-		Kind: metav1.GroupVersionKind{Group: "", Version: "v1", Kind: "Pod"},
+		Kind: metav1.GroupVersionKind{Group: "", Version: "v1", Kind: "ResolvePod"},
 		Object: runtime.RawExtension{
 			Raw:    raw,
 			Object: runtime.Object(nil),
 		},
 	}
 
-	a := ProcessingService{Request: admreq}
-	got, err := a.Pod()
+	a := MutationRequest{Request: admreq}
+	got, err := a.ResolvePod()
 	if err != nil {
 		t.Fatal(err)
 	}

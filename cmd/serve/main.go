@@ -65,7 +65,7 @@ func (c *Command) ServeMutatePods(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	adm := admission.ProcessingService{
+	adm := admission.MutationRequest{
 		Logger:  logger,
 		Request: in.Request,
 
@@ -76,7 +76,7 @@ func (c *Command) ServeMutatePods(w http.ResponseWriter, r *http.Request) {
 		Client: c.client,
 	}
 
-	out, err := adm.MutatePodReview()
+	out, err := adm.ProcessAdmissionRequest()
 	if err != nil {
 		e := fmt.Sprintf("could not generate admission response: %v", err)
 		logger.Error(e)

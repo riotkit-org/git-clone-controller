@@ -1,4 +1,4 @@
-package consts
+package context
 
 const (
 	LabelIsEnabled           = "riotkit.org/git-clone-operator"
