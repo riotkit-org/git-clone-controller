@@ -91,17 +91,16 @@ func (a MutationRequest) CreatePodPatch(pod *corev1.Pod, params appContext.Param
 		return nil, err
 	}
 
-	patchb, err := json.Marshal(patch)
+	patchBytes, err := json.Marshal(patch)
 	if err != nil {
 		return nil, err
 	}
 
-	return patchb, nil
+	return patchBytes, nil
 }
 
-// reviewResponse TODO: godoc
-func reviewResponse(uid types.UID, allowed bool, httpCode int32,
-	reason string) *admissionv1.AdmissionReview {
+// reviewResponse sends a review response without returning a patch
+func reviewResponse(uid types.UID, allowed bool, httpCode int32, reason string) *admissionv1.AdmissionReview {
 	return &admissionv1.AdmissionReview{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "AdmissionReview",
