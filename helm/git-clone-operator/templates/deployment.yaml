@@ -22,7 +22,7 @@ spec:
                   refreshImageTag: "{{- randAlphaNum 24 | nospace -}}"
               {{- end }}
         spec:
-            terminationGracePeriod: 5
+            terminationGracePeriodSeconds: 5
             serviceAccountName: {{ include "git-clone-operator.serviceAccountName" . }}
             {{- with .Values.podSecurityContext }}
             securityContext:
