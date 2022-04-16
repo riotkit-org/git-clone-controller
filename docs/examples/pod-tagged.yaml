@@ -1,17 +1,19 @@
 apiVersion: v1
 kind: Pod
 metadata:
+    name: "tagged-pod"
     labels:
-        riotkit.org/git-clone-operator: true
+        riotkit.org/git-clone-operator: "true"
     annotations:
         git-clone-operator/revision: main
-        git-clone-operator/url: https://github.com/jenkins-x/go-scm
+        git-clone-operator/url: "https://github.com/jenkins-x/go-scm"
         git-clone-operator/path: /workspace/source
-        git-clone-operator/owner: 1000
-        git-clone-operator/group: 1000
+        git-clone-operator/owner: "1000"
+        git-clone-operator/group: "1000"
         git-clone-operator/secretName: git-secrets
         git-clone-operator/secretKey: jenkins-x
 spec:
+    restartPolicy: Never
     containers:
         - command:
               - /bin/sh

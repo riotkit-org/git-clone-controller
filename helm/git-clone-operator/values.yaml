@@ -7,9 +7,7 @@ image:
 onlyLabelledNamespaces: false
 
 tls:
-    enabled: false
-    caBundle: |
-        ...
+    enabled: true
     createSecret: true
     secretName: "git-clone-operator-tls"
         
@@ -24,7 +22,7 @@ serviceAccount:
 
 env:
     LOG_JSON: false
-    LOG_LEVEL: info
+    LOG_LEVEL: debug
 
 resources:
     requests:

@@ -14,7 +14,7 @@ If release name contains chart name it will be used as a full name.
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- $name := default $.Chart.Name $.Values.nameOverride }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -58,13 +58,5 @@ Create the name of the service account to use
 {{- default (include "git-clone-operator.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
-
-{{- define "git-clone-operator.tag" -}}
-{{- if eq .Values.image.tag "" }}
-{{- .Release.appVersion }}
-{{- else }}
-{{- .Values.image.tag }}
 {{- end }}
 {{- end }}

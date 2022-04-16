@@ -44,24 +44,18 @@ spec:
                 - name: webhook-handler
                   image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
                   imagePullPolicy: Always
-                  args: ["serve"]
+                  args: ["serve", "--tls"]
                   env:
-                      {{- if .Values.tls.enabled }}
-                      - name: TLS
-                        value: "true"
-                      {{- end }}
                       {{- with .Values.env }}
                       {{- range $key, $value := . }}
-                          - name: {{ $key }}
-                            value: "{{ $value }}"
+                      - name: {{ $key }}
+                        value: "{{ $value }}"
                       {{- end }}
                       {{- end }}
-                  {{- if .Values.tls.enabled }}
                   volumeMounts:
                       - name: tls
                         mountPath: "/etc/admission-webhook/tls"
                         readOnly: true
-                  {{- end }}
                   ports:
                       - name: http
                         containerPort: 8080
@@ -76,7 +70,8 @@ spec:
                       {{- end}}
                       httpGet:
                           path: /health
-                          port: http
+                          scheme: HTTPS
+                          port: https
                   {{- end }}
                   {{- if .Values.health.readiness.enabled }}
                   readinessProbe:
@@ -85,13 +80,12 @@ spec:
                       {{- end }}
                       httpGet:
                           path: /health
-                          port: http
+                          scheme: HTTPS
+                          port: https
                   {{- end }}
                   resources:
                       {{- toYaml .Values.resources | nindent 20 }}
-            {{- if .Values.tls.enabled }}
             volumes:
                 - name: tls
                   secret:
-                      secretName: {{ include "git-clone-operator.fullname" . }}-tls
-            {{- end }}
+                      secretName: {{ include "git-clone-operator.fullname" . }}
