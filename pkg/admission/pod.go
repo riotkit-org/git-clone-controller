@@ -9,8 +9,8 @@ import (
 
 // ResolvePod extracts a pod from an admission request
 func ResolvePod(a MutationRequest) (*corev1.Pod, error) {
-	if a.Request.Kind.Kind != "ResolvePod" {
-		return nil, fmt.Errorf("only pods are supported here")
+	if a.Request.Kind.Kind != "Pod" {
+		return nil, fmt.Errorf("only pods are supported here, got request type: %v", a.Request.Kind.Kind)
 	}
 
 	p := corev1.Pod{}
