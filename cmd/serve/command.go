@@ -23,7 +23,7 @@ func NewServeCommand() *cobra.Command {
 	command.Flags().StringVarP(&app.LogLevel, "log-level", "l", "info", "Logging level: error, warn, info, debug")
 	command.Flags().BoolVarP(&app.LogJSON, "log-json", "", false, "Log in JSON format")
 	command.Flags().BoolVarP(&app.TLS, "tls", "t", false, "Use TLS (requires certificates)")
-	command.Flags().StringVarP(&app.DefaultImage, "default-image", "i", "ghcr.io/riotkit-org/git-clone-operator:latest", "Default container image")
+	command.Flags().StringVarP(&app.DefaultImage, "default-image", "i", "ghcr.io/riotkit-org/git-clone-operator:master", "Default container image")
 	command.Flags().StringVarP(&app.DefaultGitUsername, "default-git-username", "U", "__token__", "Default GIT username for HTTPS auth")
 	command.Flags().StringVarP(&app.DefaultGitToken, "default-git-token", "T", "", "Default GIT token/password for HTTPS auth")
 

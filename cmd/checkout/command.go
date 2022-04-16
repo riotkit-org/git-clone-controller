@@ -3,6 +3,7 @@ package checkout
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 func NewCheckoutCommand() *cobra.Command {
@@ -14,7 +15,7 @@ func NewCheckoutCommand() *cobra.Command {
 		Run: func(command *cobra.Command, args []string) {
 			if len(args) == 0 {
 				logrus.Errorf("Please enter a GIT url as an argument")
-				return
+				os.Exit(1)
 			}
 
 			app.Url = args[0]
@@ -22,6 +23,7 @@ func NewCheckoutCommand() *cobra.Command {
 
 			if err != nil {
 				logrus.Errorf(err.Error())
+				os.Exit(1)
 			}
 		},
 	}

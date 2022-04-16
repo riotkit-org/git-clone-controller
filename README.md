@@ -28,17 +28,21 @@ Roadmap
 
 ### v1
 
-- [ ] Injecting git-clone initContainers into labelled pods
-- [ ] Support for Git over HTTPS
-- [ ] Specifying user id (owner) of files in workspace
-- [ ] CLI command `git-clone-operator clone ...` and single Dockerfile for both initContainer and operator
-- [ ] Helm
-- [ ] Add configurable security context - runAs and filesystem permissions
+- [x] Injecting git-clone initContainers into labelled pods
+- [x] Support for Git over HTTPS
+- [x] Specifying user id (owner) of files in workspace
+- [x] CLI command `git-clone-operator clone ...` and single Dockerfile for both initContainer and operator
+- [x] Helm
+- [x] Add configurable security context - runAs and filesystem permissions
 
 ### v2
 
 - [ ] Namespaced CRD `GitClonePermissions` to specify which GIT repositories are allowed, where are the clone keys
-- [ ] Reacting on webhooks from Gitea and GitHub to update revision on existing pods (using `kind: Job` with cloned volume definitions from `kind: Pod`, using the same configuration as initContainer)
+- [ ] `chmod user:group -R` as an alternative to `securityContext`
+
+### v3
+
+- [ ] Possibly: Reacting on webhooks from Gitea and GitHub to update revision on existing pods (using `kind: Job` with cloned volume definitions from `kind: Pod`, using the same configuration as initContainer)
 
 Thanks
 ------

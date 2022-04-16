@@ -177,6 +177,11 @@ func (c *Command) cleanUpRemotes(repository *git.Repository) error {
 
 // getUrlWithCredentials makes sure that credentials are in the URL (token, username)
 func (c *Command) getUrlWithCredentials() (string, error) {
+	if c.Username == "" || c.Token == "" {
+		logrus.Info("No credentials configured, will not be using authorization")
+		return c.Url, nil
+	}
+
 	u, err := url.Parse(c.Url)
 	if err != nil {
 		return "", err
@@ -196,8 +201,6 @@ func (c *Command) checkAndPrepareInputs() error {
 	if c.Token == "" {
 		if os.Getenv("GIT_TOKEN") != "" {
 			c.Token = os.Getenv("GIT_TOKEN")
-		} else {
-			return errors.New("missing token")
 		}
 	}
 	if c.Revision == "" {

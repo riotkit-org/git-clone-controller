@@ -4,6 +4,8 @@ import (
 	appCtx "github.com/riotkit-org/git-clone-operator/pkg/context"
 	"github.com/sirupsen/logrus"
 	corev1 "k8s.io/api/core/v1"
+	"strconv"
+	"strings"
 )
 
 const InitContainerName = "git-checkout"
@@ -18,23 +20,80 @@ func MutatePodByInjectingInitContainer(pod *corev1.Pod, logger logrus.FieldLogge
 		return mutatedPod, nil
 	}
 
-	injectInitContainer(mutatedPod, params.Image, params.TargetPath, params.GitRevision, params.GitUrl, params.GitToken, params.GitUsername)
+	injectInitContainer(mutatedPod, params.Image, params.TargetPath, params.GitRevision, params.GitUrl, params.GitToken, params.GitUsername, params.FilesOwner, params.FilesGroup)
 	return mutatedPod, nil
 }
 
 // injectInitContainer injects an initContainer
-func injectInitContainer(pod *corev1.Pod, image string, path string, rev string, gitUrl string, gitToken string, userName string) {
-	pod.Spec.InitContainers = append(pod.Spec.InitContainers, corev1.Container{
+func injectInitContainer(pod *corev1.Pod, image string, path string, rev string, gitUrl string, gitToken string, userName string, owner string, group string) {
+	container := corev1.Container{
 		Name:       InitContainerName,
 		Image:      image,
 		Command:    []string{"/usr/bin/git-clone-operator"},
-		Args:       []string{"checkout", "--path", path, "--rev", rev, "--url", gitUrl, "--token", gitToken, "--user", userName},
+		Args:       []string{"checkout", gitUrl, "--path", path, "--rev", rev, "--token", gitToken, "--username", userName},
 		WorkingDir: path,
 		//EnvFrom:    nil,
-		//VolumeMounts:             nil,
+		VolumeMounts: mergeVolumeMounts(pod.Spec.Containers, path),
 		//VolumeDevices:            nil,
 		ImagePullPolicy: "Always",
-	})
+	}
+
+	// run container as specified user to operate on volume with given permissions
+	if owner != "" && group != "" {
+		logrus.Infof("Using UID=%v, GID=%v", owner, group)
+
+		// RunAsNonRoot
+		iOwner, _ := strconv.Atoi(owner)
+		asNonRoot := iOwner > 0
+
+		// RunAsUser
+		iUser, _ := strconv.Atoi(owner)
+		runAsUser := int64(iUser)
+
+		// RunAsGroup
+		iGroup, _ := strconv.Atoi(group)
+		runAsGroup := int64(iGroup)
+
+		// ReadOnlyRootFilesystem
+		roFilesystem := false
+
+		container.SecurityContext = &corev1.SecurityContext{
+			RunAsUser:              &runAsUser,
+			RunAsGroup:             &runAsGroup,
+			RunAsNonRoot:           &asNonRoot,
+			ReadOnlyRootFilesystem: &roFilesystem,
+		}
+	}
+
+	pod.Spec.InitContainers = append(pod.Spec.InitContainers, container)
+}
+
+// mergeVolumeMounts merges volume mounts of multiple containers
+func mergeVolumeMounts(containers []corev1.Container, targetPath string) []corev1.VolumeMount {
+	var merged []corev1.VolumeMount
+	var appendedPaths []string
+
+	for _, container := range containers {
+		for _, volume := range container.VolumeMounts {
+			for _, existingPath := range appendedPaths {
+				// already collected
+				if existingPath == volume.MountPath {
+					continue
+				}
+			}
+
+			// do not collect non-related mount points at all
+			if !strings.HasPrefix(targetPath, volume.MountPath) {
+				continue
+			}
+
+			logrus.Infof("Collecting VolumeMount: %v", volume.String())
+			appendedPaths = append(appendedPaths, volume.MountPath)
+			merged = append(merged, volume)
+		}
+	}
+
+	return merged
 }
 
 func hasGitInitContainer(pod *corev1.Pod) bool {

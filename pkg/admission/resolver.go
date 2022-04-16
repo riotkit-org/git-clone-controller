@@ -14,15 +14,15 @@ import (
 func resolveSecretForPod(ctx goCtx.Context, client kubernetes.Interface, pod *corev1.Pod) (string, string, error) {
 	// checking required annotations
 	if val, exists := pod.Labels[context.AnnotationSecretName]; !exists || val == "" {
-		logrus.Infof("No label '%s' defined for ResolvePod '%s/%s'", context.AnnotationSecretName, pod.Namespace, pod.Name)
+		logrus.Infof("No label '%s' defined for Pod '%s/%s'", context.AnnotationSecretName, pod.Namespace, pod.Name)
 		return "", "", nil
 	}
 	if val, exists := pod.Labels[context.AnnotationSecretTokenKey]; !exists || val == "" {
-		logrus.Infof("No label '%s' defined for ResolvePod '%s/%s'", context.AnnotationSecretTokenKey, pod.Namespace, pod.Name)
+		logrus.Infof("No label '%s' defined for Pod '%s/%s'", context.AnnotationSecretTokenKey, pod.Namespace, pod.Name)
 		return "", "", nil
 	}
 	if val, exists := pod.Labels[context.AnnotationSecretUserKey]; !exists || val == "" {
-		logrus.Infof("No label '%s' defined for ResolvePod '%s/%s'", context.AnnotationSecretUserKey, pod.Namespace, pod.Name)
+		logrus.Infof("No label '%s' defined for Pod '%s/%s'", context.AnnotationSecretUserKey, pod.Namespace, pod.Name)
 		return "", "", nil
 	}
 

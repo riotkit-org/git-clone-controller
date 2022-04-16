@@ -44,7 +44,7 @@ spec:
                 - name: webhook-handler
                   image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
                   imagePullPolicy: Always
-                  args: ["serve", "--tls"]
+                  args: ["serve", "--tls", "--default-image", "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"]
                   env:
                       {{- with .Values.env }}
                       {{- range $key, $value := . }}

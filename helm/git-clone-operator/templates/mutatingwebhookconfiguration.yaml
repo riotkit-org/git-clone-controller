@@ -13,7 +13,7 @@ metadata:
         {{- include "git-clone-operator.labels" . | nindent 8 }}
 webhooks:
     - name: {{ include "git-clone-operator.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
-      failurePolicy: Ignore  # do not block whole cluster
+      failurePolicy: Fail  # do not block whole cluster
       {{- if .Values.onlyLabelledNamespaces }}
       namespaceSelector:
           matchLabels:
