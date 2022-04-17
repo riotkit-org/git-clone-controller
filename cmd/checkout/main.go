@@ -89,6 +89,14 @@ func (c *Command) checkout(url string) (*git.Repository, error) {
 		return repository, nil
 	} else {
 		logrus.Info("No local repository found, doing clone")
+
+		if _, err := os.Stat(c.Path); errors.Is(err, os.ErrNotExist) {
+			logrus.Info("Directory does not exist, creating")
+			if err := os.MkdirAll(c.Path, 0755); err != nil {
+				return &git.Repository{}, errors.Wrap(err, "Cannot create target directory before doing `git clone`")
+			}
+		}
+
 		repository, err := git.PlainClone(c.Path, c.IsBare, &git.CloneOptions{
 			URL:      url,
 			Progress: os.Stdout,
