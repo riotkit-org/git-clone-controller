@@ -107,10 +107,12 @@ Behavior
 Security and reliability
 ------------------------
 
-- Using distroless images
+- Using [distroless](https://github.com/GoogleContainerTools/distroless/#why-should-i-use-distroless-images) **static image (No operating system, it does not contain even glibc)**
+- Static golang binary, without dynamic libraries, no dependency on libc
+- No dependency on `git` binary, thanks to [go-git](https://github.com/go-git/go-git)
 - Namespaced `kind: Secret` are used close to `kind: Pod`
-- Admission Webhooks are limited in scope on API level - **only labelled Pods are touched**
-- Default Pod's securityContext runs as non-root, with high uid/gid, should run on OpenShift
+- Admission Webhooks are [limited in scope on API level](./helm/git-clone-operator/templates/mutatingwebhookconfiguration.yaml) - **only labelled Pods are touched**
+- Default Pod's securityContext runs as non-root, with high uid/gid, should work on OpenShift
 - API is using internally mutual TLS to talk with Kubernetes
 
 Roadmap
