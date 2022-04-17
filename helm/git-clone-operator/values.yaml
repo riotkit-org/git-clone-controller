@@ -13,7 +13,11 @@ tls:
         
 replicas: 1
 podAnnotations: {}
-podSecurityContext: {}
+podSecurityContext:
+    runAsUser: 65161
+    runAsGroup: 65161
+    fsGroup: 65161
+    runAsNonRoot: true
 
 serviceAccount:
     create: true

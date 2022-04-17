@@ -33,7 +33,7 @@ webhooks:
               namespace: {{ .Release.Namespace }}
               name: {{ include "git-clone-operator.fullname" . }}
               path: /mutate-pods
-              port: 443
+              port: 4443
           caBundle: {{ b64enc $ca.Cert }}
       admissionReviewVersions: ["v1"]
       sideEffects: NoneOnDryRun

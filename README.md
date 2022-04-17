@@ -104,6 +104,14 @@ Behavior
 | Volume permissions are invalid                                    | Fail inside initContainer and don't let Pod's containers to execute |
 | Unknown error while trying to checkout/clone inside initContainer | Fail inside initContainer and don't let Pod's containers to execute |
 
+Security and reliability
+------------------------
+
+- Using distroless images
+- Namespaced `kind: Secret` are used close to `kind: Pod`
+- Admission Webhooks are limited in scope on API level - **only labelled Pods are touched**
+- Default Pod's securityContext runs as non-root, with high uid/gid, should run on OpenShift
+- API is using internally mutual TLS to talk with Kubernetes
 
 Roadmap
 -------

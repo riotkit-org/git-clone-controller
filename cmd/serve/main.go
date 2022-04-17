@@ -39,8 +39,8 @@ func (c *Command) Run() error {
 	if c.TLS {
 		cert := "/etc/admission-webhook/tls/tls.crt"
 		key := "/etc/admission-webhook/tls/tls.key"
-		logrus.Print("Listening on port 443...")
-		return http.ListenAndServeTLS(":443", cert, key, nil)
+		logrus.Print("Listening on port 4443...")
+		return http.ListenAndServeTLS(":4443", cert, key, nil)
 	} else {
 		logrus.Print("Listening on port 8080...")
 		return http.ListenAndServe(":8080", nil)
