@@ -77,16 +77,28 @@ spec:
         fsGroup: 1000
 ```
 
+**Running this example:**
+
+```bash
+kubectl delete -f docs/examples/pod-tagged.yaml; kubectl apply -f docs/examples/pod-tagged.yaml
+
+# observe checkout
+kubectl logs -f tagged-pod -c git-checkout
+
+# check the example command that will print list of files and permissions
+kubectl logs -f tagged-pod
+```
+
 Behavior
 --------
 
-| Circumstances                                                     | Behavior                   |
-|-------------------------------------------------------------------|----------------------------|
-| Pods NOT marked with `riotkit.org/git-clone-operator: "true"`     | Do Nothing                 |
-| Pods MARKED with `riotkit.org/git-clone-operator: "true"`         | Process                    |
-| Missing required annotation                                       | Do not schedule that `Pod` |
-| `kind: Secret` was specified, but is invalid                      | Do not schedule that `Pod` |
-| Unknown error while processing labelled `Pod`                     | Do not schedule that `Pod` |
+| Circumstances                                                     | Behavior                                                            |
+|-------------------------------------------------------------------|---------------------------------------------------------------------|
+| Pods NOT marked with `riotkit.org/git-clone-operator: "true"`     | Do Nothing                                                          |
+| Pods MARKED with `riotkit.org/git-clone-operator: "true"`         | Process                                                             |
+| Missing required annotation                                       | Do not schedule that `Pod`                                          |
+| `kind: Secret` was specified, but is invalid                      | Do not schedule that `Pod`                                          |
+| Unknown error while processing labelled `Pod`                     | Do not schedule that `Pod`                                          |
 | GIT credentials are invalid                                       | Fail inside initContainer and don't let Pod's containers to execute |
 | Revision is invalid                                               | Fail inside initContainer and don't let Pod's containers to execute |
 | Volume permissions are invalid                                    | Fail inside initContainer and don't let Pod's containers to execute |
