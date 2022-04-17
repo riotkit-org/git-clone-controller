@@ -23,6 +23,76 @@ Simply clone your scripts repository in your pod workspace, execute script and e
 `git-clone-operator checkout` is a CLI command that could be a replacement of `git clone` and `git checkout`. 
 It's advantage is that it is designed to be running automatic: When repository does not exists, it gets cloned, when exists, then updated with remote.
 
+Example usage
+-------------
+
+Every `Pod` labelled with `riotkit.org/git-clone-operator: "true"` will be processed by `git-clone-operator`.
+
+`Pod` annotations are the place, where `git-clone-operator` short specification is kept.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+    name: "tagged-pod"
+    labels:
+        # required: only labelled Pods are processed
+        riotkit.org/git-clone-operator: "true"
+    annotations:
+        # required: commit/tag/branch
+        git-clone-operator/revision: main
+        # required: http/https url
+        git-clone-operator/url: "https://github.com/jenkins-x/go-scm"
+        # required: target path, where the repository should be cloned, should be placed on a shared Volume mount point with other containers in same Pod
+        git-clone-operator/path: /workspace/source
+        # optional: user id (will result in adding `securityContext`), in effect: running `git` as selected user and creating files as selected user
+        git-clone-operator/owner: "1000"
+        # optional: group id (will result in adding `securityContext`), same behavior as in "git-clone-operator/owner"
+        git-clone-operator/group: "1000"
+        # optional: `kind: Secret` name from same namespace as Pod is (if not specified, then global defaults from operator will be taken, or no authorization would be used)
+        git-clone-operator/secretName: git-secrets
+        # optional: entry name in `.data` section of selected `kind: Secret`
+        git-clone-operator/secretKey: jenkins-x
+spec:
+    restartPolicy: Never
+    automountServiceAccountToken: false
+    containers:
+        - command:
+              - /bin/sh
+              - "-c"
+              - "find /workspace/source; ls -la /workspace/source"
+          image: busybox:latest
+          name: test
+          volumeMounts:
+              - mountPath: /workspace/source
+                name: workspace
+    volumes:
+        - name: workspace
+          emptyDir: {}
+          
+    # PERMISSIONS:
+    #  If `git-clone-operator/owner` and `git-clone-operator/group` specified, then `fsGroup` should have same value there
+    #  so the mounted volume would have proper permissions
+    securityContext:
+        fsGroup: 1000
+```
+
+Behavior
+--------
+
+| Circumstances                                                     | Behavior                   |
+|-------------------------------------------------------------------|----------------------------|
+| Pods NOT marked with `riotkit.org/git-clone-operator: "true"`     | Do Nothing                 |
+| Pods MARKED with `riotkit.org/git-clone-operator: "true"`         | Process                    |
+| Missing required annotation                                       | Do not schedule that `Pod` |
+| `kind: Secret` was specified, but is invalid                      | Do not schedule that `Pod` |
+| Unknown error while processing labelled `Pod`                     | Do not schedule that `Pod` |
+| GIT credentials are invalid                                       | Fail inside initContainer and don't let Pod's containers to execute |
+| Revision is invalid                                               | Fail inside initContainer and don't let Pod's containers to execute |
+| Volume permissions are invalid                                    | Fail inside initContainer and don't let Pod's containers to execute |
+| Unknown error while trying to checkout/clone inside initContainer | Fail inside initContainer and don't let Pod's containers to execute |
+
+
 Roadmap
 -------
 
