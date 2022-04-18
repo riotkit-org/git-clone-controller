@@ -75,15 +75,27 @@ func (c *Command) checkout(url string) (*git.Repository, error) {
 			hash = plumbing.NewHash(refName)
 		}
 
-		logrus.Info("Doing checkout")
+		logrus.Infof("Doing checkout: hash=%v, branch=%v", hash, branch)
 		checkoutErr := w.Checkout(&git.CheckoutOptions{
 			Hash:   hash,
 			Branch: branch,
-			Keep:   true,
+			Keep:   false,
 			Create: false,
 		})
 		if checkoutErr != nil {
 			return repository, errors.Wrap(checkoutErr, "Cannot perform a `git checkout`")
+		}
+
+		if isBranch {
+			pullErr := w.Pull(&git.PullOptions{
+				RemoteName:    "origin",
+				ReferenceName: branch,
+			})
+			if pullErr != nil {
+				if !strings.Contains(pullErr.Error(), "up-to-date") {
+					return repository, errors.Wrap(pullErr, "Cannot perform `git pull`")
+				}
+			}
 		}
 
 		return repository, nil
