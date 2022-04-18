@@ -5,13 +5,14 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
+	"os"
 	"testing"
 )
 
 // TestCommand_Run makes a simple functional test - clone, then make a checkout to other reference
 func TestCommand_Run(t *testing.T) {
 	dir, err := ioutil.TempDir("../../.build/", "test-command-run")
-	// defer os.RemoveAll(dir)
+	defer os.RemoveAll(dir)
 	if err != nil {
 		logrus.Fatal(err)
 	}
