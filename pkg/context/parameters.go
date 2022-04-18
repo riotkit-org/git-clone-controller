@@ -17,17 +17,17 @@ type Parameters struct {
 }
 
 func NewCheckoutParametersFromPod(pod *corev1.Pod, defaultImage string, defaultGitUsername string, defaultGitToken string, secretUsername string, secretGitToken string) (Parameters, error) {
-	if _, exists := pod.Annotations[AnnotationGitUrl]; !exists {
-		return Parameters{}, errors.Errorf("Label '%s' not found in ResolvePod, cannot recognize GIT url", AnnotationGitUrl)
+	if val, exists := pod.Annotations[AnnotationGitUrl]; !exists || val == "" {
+		return Parameters{}, errors.Errorf("Label '%s' not found in Pod, cannot recognize GIT url", AnnotationGitUrl)
 	}
-	if _, exists := pod.Annotations[AnnotationGitPath]; !exists {
-		return Parameters{}, errors.Errorf("Label '%s' not found in ResolvePod, cannot guess destination directory", AnnotationGitPath)
+	if val, exists := pod.Annotations[AnnotationGitPath]; !exists || val == "" {
+		return Parameters{}, errors.Errorf("Label '%s' not found in Pod, cannot guess destination directory", AnnotationGitPath)
 	}
-	if _, exists := pod.Annotations[AnnotationFilesOwner]; !exists {
-		return Parameters{}, errors.Errorf("Label '%s' not found in ResolvePod, files owner id must be specified", AnnotationFilesOwner)
+	if val, exists := pod.Annotations[AnnotationFilesOwner]; !exists || val == "" {
+		return Parameters{}, errors.Errorf("Label '%s' not found in Pod, files owner id must be specified", AnnotationFilesOwner)
 	}
-	if _, exists := pod.Annotations[AnnotationFilesGroup]; !exists {
-		return Parameters{}, errors.Errorf("Label '%s' not found in ResolvePod, files owner group id must be specified", AnnotationFilesOwner)
+	if val, exists := pod.Annotations[AnnotationFilesGroup]; !exists || val == "" {
+		return Parameters{}, errors.Errorf("Label '%s' not found in Pod, files owner group id must be specified", AnnotationFilesOwner)
 	}
 	if _, exists := pod.Annotations[AnnotationRev]; !exists {
 		pod.Annotations[AnnotationRev] = "main"
@@ -43,7 +43,7 @@ func NewCheckoutParametersFromPod(pod *corev1.Pod, defaultImage string, defaultG
 		Image:       defaultImage,
 		GitUrl:      pod.Annotations[AnnotationGitUrl],
 		GitRevision: pod.Annotations[AnnotationRev],
-		GitUsername: defaultGitUsername,
+		GitUsername: secretUsername,
 		GitToken:    secretGitToken,
 		TargetPath:  pod.Annotations[AnnotationGitPath],
 		FilesOwner:  pod.Annotations[AnnotationFilesOwner],
