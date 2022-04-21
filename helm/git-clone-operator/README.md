@@ -34,3 +34,8 @@ helm repo add riotkit-org https://riotkit-org.github.io/helm-of-revolution/
 helm install my-git-clone-operator riotkit-org/git-clone-operator                
 ```
 
+Documentation
+-------------
+
+### [For more documentation please take a look at Github page](https://github.com/riotkit-org/git-clone-operator)
+
