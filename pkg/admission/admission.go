@@ -55,7 +55,7 @@ func (a MutationRequest) ProcessAdmissionRequest() (*admissionv1.AdmissionReview
 	// glue parameters together
 	parameters, paramsErr := appContext.NewCheckoutParametersFromPod(pod, a.DefaultImage, a.DefaultGitUsername, a.DefaultGitToken, gitUserName, gitToken)
 	if paramsErr != nil {
-		return reviewResponse(a.Request.UID, false, http.StatusBadRequest, errors.Wrap(secretErr, "git-clone-operator: Cannot parse ResolvePod labels/annotations").Error()), err
+		return reviewResponse(a.Request.UID, false, http.StatusBadRequest, errors.Wrap(secretErr, "git-clone-operator: Cannot parse Pod labels/annotations").Error()), paramsErr
 	}
 
 	// create a patch
