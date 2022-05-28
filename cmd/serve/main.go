@@ -108,6 +108,7 @@ func (c *Command) setLogger() {
 		logrus.Fatalf("Cannot parse log level: %v", parseErr)
 	}
 	logrus.SetLevel(lvl)
+	logrus.Printf("Setting log level=%v", lvl.String())
 
 	if c.LogJSON {
 		logrus.SetFormatter(&logrus.JSONFormatter{})
