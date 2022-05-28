@@ -49,7 +49,7 @@ func (a MutationRequest) ProcessAdmissionRequest() (*admissionv1.AdmissionReview
 	}
 	gitUserName, gitToken, secretErr := resolveSecretForPod(context.TODO(), a.Client, pod)
 	if secretErr != nil {
-		return reviewResponse(a.Request.UID, false, http.StatusBadRequest, errors.Wrap(secretErr, "git-clone-operator: Missing `kind: Secret` for annotated ResolvePod").Error()), err
+		return reviewResponse(a.Request.UID, false, http.StatusBadRequest, errors.Wrap(secretErr, "git-clone-operator: Missing `kind: Secret` for annotated Pod").Error()), err
 	}
 
 	// glue parameters together
