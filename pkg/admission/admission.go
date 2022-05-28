@@ -23,8 +23,9 @@ import (
 
 // MutationRequest is a container for admission logic
 type MutationRequest struct {
-	Logger  *logrus.Entry
-	Request *admissionv1.AdmissionRequest
+	Logger       *logrus.Entry
+	IsDebugLevel bool
+	Request      *admissionv1.AdmissionRequest
 
 	DefaultImage       string
 	DefaultGitUsername string

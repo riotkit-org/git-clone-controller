@@ -13,6 +13,10 @@ func ResolvePod(a MutationRequest) (*corev1.Pod, error) {
 		return nil, fmt.Errorf("only pods are supported here, got request type: %v", a.Request.Kind.Kind)
 	}
 
+	if a.IsDebugLevel {
+		fmt.Printf("Processing request: %v", a.Request.Object.Raw)
+	}
+
 	p := corev1.Pod{}
 	if err := json.Unmarshal(a.Request.Object.Raw, &p); err != nil {
 		return nil, err

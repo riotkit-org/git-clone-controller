@@ -67,8 +67,9 @@ func (c *Command) ServeMutatePods(w http.ResponseWriter, r *http.Request) {
 	}
 
 	adm := admission.MutationRequest{
-		Logger:  logger,
-		Request: in.Request,
+		Logger:       logger,
+		IsDebugLevel: c.LogLevel == "debug",
+		Request:      in.Request,
 
 		DefaultImage:       c.DefaultImage,
 		DefaultGitUsername: c.DefaultGitUsername,
