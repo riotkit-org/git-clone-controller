@@ -14,21 +14,21 @@ import (
 func resolveSecretForPod(ctx goCtx.Context, client kubernetes.Interface, pod *corev1.Pod) (string, string, error) {
 	// checking required annotations
 	if val, exists := pod.Labels[context.AnnotationSecretName]; !exists || val == "" {
-		logrus.Infof("No label '%s' defined for Pod '%s/%s'", context.AnnotationSecretName, pod.Namespace, pod.Name)
+		logrus.Infof("No annotation '%s' defined for Pod '%s/%s'", context.AnnotationSecretName, pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
 		return "", "", nil
 	}
 	if val, exists := pod.Labels[context.AnnotationSecretTokenKey]; !exists || val == "" {
-		logrus.Infof("No label '%s' defined for Pod '%s/%s'", context.AnnotationSecretTokenKey, pod.Namespace, pod.Name)
+		logrus.Infof("No annotation '%s' defined for Pod '%s/%s'", context.AnnotationSecretTokenKey, pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
 		return "", "", nil
 	}
 	if val, exists := pod.Labels[context.AnnotationSecretUserKey]; !exists || val == "" {
-		logrus.Infof("No label '%s' defined for Pod '%s/%s'", context.AnnotationSecretUserKey, pod.Namespace, pod.Name)
+		logrus.Infof("No annotation '%s' defined for Pod '%s/%s'", context.AnnotationSecretUserKey, pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
 		return "", "", nil
 	}
 
 	// fetching `kind: Secret` from API
 	secretName := pod.Labels[context.AnnotationSecretName]
-	secret, err := client.CoreV1().Secrets(pod.Namespace).Get(ctx, secretName, metav1.GetOptions{})
+	secret, err := client.CoreV1().Secrets(pod.ObjectMeta.Namespace).Get(ctx, secretName, metav1.GetOptions{})
 	if err != nil {
 		return "", "", errors.Wrapf(err, "Cannot fetch secret for ResolvePod annotated with '%s=%s'", context.AnnotationSecretName, pod.Labels[context.AnnotationSecretName])
 	}

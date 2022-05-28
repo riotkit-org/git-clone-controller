@@ -16,7 +16,7 @@ func MutatePodByInjectingInitContainer(pod *corev1.Pod, logger logrus.FieldLogge
 	mutatedPod := pod.DeepCopy()
 
 	if hasGitInitContainer(pod) {
-		nLogger.Infof("ResolvePod '%s' already has initContainer present", pod.Name)
+		nLogger.Infof("ResolvePod '%s' already has initContainer present", pod.ObjectMeta.Name)
 		return mutatedPod, nil
 	}
 
@@ -32,9 +32,9 @@ func injectInitContainer(pod *corev1.Pod, image string, path string, rev string,
 		Command:    []string{"/usr/bin/git-clone-operator"},
 		Args:       []string{"checkout", gitUrl, "--path", path, "--rev", rev, "--token", gitToken, "--username", userName},
 		WorkingDir: path,
-		//EnvFrom:    nil,
+		// EnvFrom:    nil,
 		VolumeMounts: mergeVolumeMounts(pod.Spec.Containers, path),
-		//VolumeDevices:            nil,
+		// VolumeDevices:            nil,
 		ImagePullPolicy: "Always",
 	}
 

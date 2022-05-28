@@ -71,8 +71,8 @@ func (a MutationRequest) ProcessAdmissionRequest() (*admissionv1.AdmissionReview
 // a given pod
 func (a MutationRequest) CreatePodPatch(pod *corev1.Pod, params appContext.Parameters) ([]byte, error) {
 	var podName string
-	if pod.Name != "" {
-		podName = pod.Name
+	if pod.ObjectMeta.Name != "" {
+		podName = pod.ObjectMeta.Name
 	} else {
 		if pod.ObjectMeta.GenerateName != "" {
 			podName = pod.ObjectMeta.GenerateName
