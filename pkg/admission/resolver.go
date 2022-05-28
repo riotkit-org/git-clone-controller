@@ -31,7 +31,7 @@ func resolveSecretForPod(ctx goCtx.Context, client kubernetes.Interface, pod *co
 	secretName := pod.Annotations[context.AnnotationSecretName]
 	secret, err := client.CoreV1().Secrets(pod.ObjectMeta.Namespace).Get(ctx, secretName, metav1.GetOptions{})
 	if err != nil {
-		return "", "", errors.Wrapf(err, "Cannot fetch secret for ResolvePod annotated with '%s=%s'", context.AnnotationSecretName, pod.Annotations[context.AnnotationSecretName])
+		return "", "", errors.Wrapf(err, "Cannot fetch secret for Pod annotated with '%s=%s'", context.AnnotationSecretName, pod.Annotations[context.AnnotationSecretName])
 	}
 
 	// extracting data from `kind: Secret`
