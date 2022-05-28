@@ -104,7 +104,7 @@ func (c *Command) ServeMutatePods(w http.ResponseWriter, r *http.Request) {
 func (c *Command) setLogger() {
 	lvl, parseErr := logrus.ParseLevel(c.LogLevel)
 	if parseErr != nil {
-		logrus.Fatalf("Cannot parse log level", parseErr)
+		logrus.Fatalf("Cannot parse log level: %v", parseErr)
 	}
 	logrus.SetLevel(lvl)
 
