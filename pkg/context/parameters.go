@@ -18,16 +18,16 @@ type Parameters struct {
 
 func NewCheckoutParametersFromPod(pod *corev1.Pod, defaultImage string, defaultGitUsername string, defaultGitToken string, secretUsername string, secretGitToken string) (Parameters, error) {
 	if val, exists := pod.Annotations[AnnotationGitUrl]; !exists || val == "" {
-		return Parameters{}, errors.Errorf("Label '%s' not found in Pod, cannot recognize GIT url", AnnotationGitUrl)
+		return Parameters{}, errors.Errorf("Annotation '%s' not found in Pod, cannot recognize GIT url", AnnotationGitUrl)
 	}
 	if val, exists := pod.Annotations[AnnotationGitPath]; !exists || val == "" {
-		return Parameters{}, errors.Errorf("Label '%s' not found in Pod, cannot guess destination directory", AnnotationGitPath)
+		return Parameters{}, errors.Errorf("Annotation '%s' not found in Pod, cannot guess destination directory", AnnotationGitPath)
 	}
 	if val, exists := pod.Annotations[AnnotationFilesOwner]; !exists || val == "" {
-		return Parameters{}, errors.Errorf("Label '%s' not found in Pod, files owner id must be specified", AnnotationFilesOwner)
+		return Parameters{}, errors.Errorf("Annotation '%s' not found in Pod, files owner id must be specified", AnnotationFilesOwner)
 	}
 	if val, exists := pod.Annotations[AnnotationFilesGroup]; !exists || val == "" {
-		return Parameters{}, errors.Errorf("Label '%s' not found in Pod, files owner group id must be specified", AnnotationFilesOwner)
+		return Parameters{}, errors.Errorf("Annotation '%s' not found in Pod, files owner group id must be specified", AnnotationFilesGroup)
 	}
 	if _, exists := pod.Annotations[AnnotationRev]; !exists {
 		pod.Annotations[AnnotationRev] = "main"

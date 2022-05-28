@@ -23,6 +23,11 @@ func ResolvePod(a MutationRequest) (*corev1.Pod, error) {
 		return nil, err
 	}
 
+	// fix: Missing namespace in case of scoped call by controllers like ReplicaSet
+	if p.ObjectMeta.Namespace == "" && a.Request.Namespace != "" {
+		p.ObjectMeta.Namespace = a.Request.Namespace
+	}
+
 	return &p, nil
 }
 
