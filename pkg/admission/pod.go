@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/riotkit-org/git-clone-operator/pkg/context"
+	"github.com/sirupsen/logrus"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -14,7 +15,7 @@ func ResolvePod(a MutationRequest) (*corev1.Pod, error) {
 	}
 
 	if a.IsDebugLevel {
-		fmt.Printf("Processing request: %v", a.Request.Object.Raw)
+		logrus.Printf("Processing request: %v", string(a.Request.Object.Raw))
 	}
 
 	p := corev1.Pod{}
