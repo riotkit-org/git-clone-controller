@@ -21,9 +21,10 @@ func resolveSecretForPod(ctx goCtx.Context, client kubernetes.Interface, pod *co
 		logrus.Infof("No annotation '%s' defined for Pod '%s/%s'", context.AnnotationSecretTokenKey, pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
 		return "", "", nil
 	}
+
+	// username is not mandatory
 	if val, exists := pod.Annotations[context.AnnotationSecretUserKey]; !exists || val == "" {
-		logrus.Infof("No annotation '%s' defined for Pod '%s/%s'", context.AnnotationSecretUserKey, pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
-		return "", "", nil
+		logrus.Debugf("No annotation '%s' defined for Pod '%s/%s'", context.AnnotationSecretUserKey, pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
 	}
 
 	// fetching `kind: Secret` from API
@@ -39,8 +40,10 @@ func resolveSecretForPod(ctx goCtx.Context, client kubernetes.Interface, pod *co
 		return "", "", errors.Errorf("The secret '%s' does not contain key '%s'", secretName, secret.Data[context.AnnotationSecretTokenKey])
 	}
 	username, usernameDefined := secret.Data[context.AnnotationSecretTokenKey]
-	if !usernameDefined {
-		return "", "", errors.Errorf("The secret '%s' does not contain key '%s'", secretName, secret.Data[context.AnnotationSecretUserKey])
+	if _, exists := pod.Annotations[context.AnnotationSecretUserKey]; exists {
+		if !usernameDefined {
+			return "", "", errors.Errorf("The secret '%s' does not contain key '%s', while the annotation on Pod specifies that key", secretName, secret.Data[context.AnnotationSecretUserKey])
+		}
 	}
 
 	return string(username), string(token), nil
