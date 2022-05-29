@@ -61,7 +61,10 @@ metadata:
         # optional: `kind: Secret` name from same namespace as Pod is (if not specified, then global defaults from operator will be taken, or no authorization would be used)
         git-clone-operator/secretName: git-secrets
         # optional: entry name in `.data` section of selected `kind: Secret`
-        git-clone-operator/secretKey: jenkins-x
+        git-clone-operator/secretTokenKey: jenkins-x
+
+        # optional: entry name in `.data` section, describes the GIT username, defaults to __token__ if not specified
+        #git-clone-operator/secretUsernameKey: username
 spec:
     restartPolicy: Never
     automountServiceAccountToken: false

@@ -14,7 +14,7 @@ import (
 func resolveSecretForPod(ctx goCtx.Context, client kubernetes.Interface, pod *corev1.Pod) (string, string, error) {
 	// checking required annotations
 	if val, exists := pod.Annotations[context.AnnotationSecretName]; !exists || val == "" {
-		logrus.Infof("No annotation '%s' defined for Pod '%s/%s'", context.AnnotationSecretName, pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
+		logrus.Infof("No annotation '%s' defined for Pod '%s/%s', skipping secret", context.AnnotationSecretName, pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
 		return "", "", nil
 	}
 	if val, exists := pod.Annotations[context.AnnotationSecretTokenKey]; !exists || val == "" {

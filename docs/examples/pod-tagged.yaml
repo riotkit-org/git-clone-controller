@@ -11,7 +11,7 @@ metadata:
         git-clone-operator/owner: "1000"
         git-clone-operator/group: "1000"
         git-clone-operator/secretName: git-secrets
-        git-clone-operator/secretKey: jenkins-x
+        git-clone-operator/secretTokenKey: jenkins-x
 spec:
     restartPolicy: Never
     automountServiceAccountToken: false
