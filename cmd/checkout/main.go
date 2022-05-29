@@ -38,6 +38,7 @@ func (c *Command) Run() error {
 	if parseUrlErr != nil {
 		return errors.Wrap(parseUrlErr, "Cannot parse GIT url")
 	}
+
 	repository, checkoutErr := c.checkout(urlWithCredentials)
 	if checkoutErr != nil {
 		return errors.Wrap(checkoutErr, "Cannot clone/checkout repository")
@@ -236,6 +237,11 @@ func (c *Command) cleanUpRemotes(repository *git.Repository) error {
 
 // getUrlWithCredentials makes sure that credentials are in the URL (token, username)
 func (c *Command) getUrlWithCredentials() (string, error) {
+	if strings.Contains(c.Url, "git@") {
+		logrus.Infof("GIT-SSH url detected, not parsing the URL")
+		return c.Url, nil
+	}
+
 	if c.Username == "" || c.Token == "" {
 		logrus.Info("No credentials configured, will not be using authorization")
 		return c.Url, nil
@@ -245,7 +251,17 @@ func (c *Command) getUrlWithCredentials() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("%s://%s:%s@%s:%s/%s", u.Scheme, c.Username, c.Token, u.Hostname(), u.Port(), u.Path), nil
+
+	var port = u.Port()
+	if port == "" && u.Scheme == "https" {
+		port = "443"
+	} else if port == "" && u.Scheme == "http" {
+		port = "80"
+	} else if port == "" && u.Scheme == "git" {
+		port = "22"
+	}
+
+	return fmt.Sprintf("%s://%s:%s@%s:%s/%s", u.Scheme, c.Username, c.Token, u.Hostname(), port, strings.TrimLeft(u.Path, "/")), nil
 }
 
 // checkAndPrepareInputs performs a pre-validation and mutation of input parameters
