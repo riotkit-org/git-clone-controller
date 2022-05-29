@@ -142,7 +142,8 @@ Roadmap
 ### v2
 
 - [ ] Namespaced CRD `GitClonePermissions` to specify which GIT repositories are allowed, where are the clone keys
-- [ ] `chmod user:group -R` as an alternative to `securityContext`
+- [ ] `chown user:group -R` as an alternative to `securityContext` in case, when somebody would have to run initContainer as root
+- [ ] Support for Git over SSH
 
 ### v3
 
