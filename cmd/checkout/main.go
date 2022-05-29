@@ -60,9 +60,8 @@ func (c *Command) inspectEnvironment() {
 	logrus.Infof("Running as uid=%v (to adjust set annotation: %s)", os.Getuid(), context.AnnotationFilesOwner)
 
 	// Current working directory and parent directory
-	pwd, _ := os.Getwd()
-	c.listDirectory(pwd)
-	c.listDirectory(pwd + "/../")
+	c.listDirectory(c.Path)
+	c.listDirectory(c.Path + "/../")
 
 	// Mounted volumes in Linux
 	logrus.Info("Inspecting volume mount points")
