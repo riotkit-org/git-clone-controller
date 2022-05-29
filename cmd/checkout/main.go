@@ -5,11 +5,15 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/moby/sys/mountinfo"
 	"github.com/pkg/errors"
+	"github.com/riotkit-org/git-clone-operator/pkg/context"
 	"github.com/sirupsen/logrus"
+	"io/ioutil"
 	"net/url"
 	"os"
 	"strings"
+	"syscall"
 )
 
 type Command struct {
@@ -27,6 +31,8 @@ func (c *Command) Run() error {
 	if err := c.checkAndPrepareInputs(); err != nil {
 		return errors.Wrap(err, "Validation failed")
 	}
+
+	c.inspectEnvironment()
 
 	urlWithCredentials, parseUrlErr := c.getUrlWithCredentials()
 	if parseUrlErr != nil {
@@ -46,6 +52,34 @@ func (c *Command) Run() error {
 	logrus.Infof("The local repository is now on '%s', at commit '%s'", head.Name().String(), head.Hash().String())
 
 	return nil
+}
+
+// inspectEnvironment is displaying helpful information about the execution environment to help adjust the parameters in case, when the initContainer would fail
+func (c *Command) inspectEnvironment() {
+	// Permissions - running as user
+	logrus.Infof("Running as uid=%v (to adjust set annotation: %s)", os.Getuid(), context.AnnotationFilesOwner)
+
+	// Current working directory
+	pwd, _ := os.Getwd()
+	logrus.Infof("Looking around in '%s' (annotation: %s)", pwd, context.AnnotationGitPath)
+	paths, err := ioutil.ReadDir("./")
+	if err != nil {
+		logrus.Errorln(err)
+	}
+	for _, path := range paths {
+		stat := path.Sys().(*syscall.Stat_t)
+		logrus.Infof("> [%v %v:%v] %s", path.Mode().String(), stat.Uid, stat.Gid, path.Name())
+	}
+
+	// Mounted volumes in Linux
+	logrus.Info("Inspecting volume mount points")
+	mounts, err := mountinfo.GetMounts(nil)
+	if err != nil {
+		logrus.Errorln(err)
+	}
+	for _, mount := range mounts {
+		logrus.Infof("Found volume mounted at '%s' (%s)", mount.Mountpoint, mount.FSType)
+	}
 }
 
 // checkout is performing actually a fresh clone of repository, or update of existing repository
