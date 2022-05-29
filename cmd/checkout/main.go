@@ -59,17 +59,10 @@ func (c *Command) inspectEnvironment() {
 	// Permissions - running as user
 	logrus.Infof("Running as uid=%v (to adjust set annotation: %s)", os.Getuid(), context.AnnotationFilesOwner)
 
-	// Current working directory
+	// Current working directory and parent directory
 	pwd, _ := os.Getwd()
-	logrus.Infof("Looking around in '%s' (annotation: %s)", pwd, context.AnnotationGitPath)
-	paths, err := ioutil.ReadDir("./")
-	if err != nil {
-		logrus.Errorln(err)
-	}
-	for _, path := range paths {
-		stat := path.Sys().(*syscall.Stat_t)
-		logrus.Infof("> [%v %v:%v] %s", path.Mode().String(), stat.Uid, stat.Gid, path.Name())
-	}
+	c.listDirectory(pwd)
+	c.listDirectory(pwd + "/../")
 
 	// Mounted volumes in Linux
 	logrus.Info("Inspecting volume mount points")
@@ -79,6 +72,19 @@ func (c *Command) inspectEnvironment() {
 	}
 	for _, mount := range mounts {
 		logrus.Infof("Found volume mounted at '%s' (%s)", mount.Mountpoint, mount.FSType)
+	}
+}
+
+// listDirectory lists files and directories in given path, the listing includes permissions
+func (c *Command) listDirectory(dirPath string) {
+	logrus.Infof("Looking around in '%s' (annotation: %s)", dirPath, context.AnnotationGitPath)
+	paths, err := ioutil.ReadDir(dirPath)
+	if err != nil {
+		logrus.Errorln(err)
+	}
+	for _, path := range paths {
+		stat := path.Sys().(*syscall.Stat_t)
+		logrus.Infof(" > [%v %v:%v] %s", path.Mode().String(), stat.Uid, stat.Gid, path.Name())
 	}
 }
 
