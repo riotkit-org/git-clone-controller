@@ -37,7 +37,7 @@ func resolveSecretForPod(ctx goCtx.Context, client kubernetes.Interface, pod *co
 	// extracting data from `kind: Secret`
 	token, tokenDefined := secret.Data[context.AnnotationSecretTokenKey]
 	if !tokenDefined {
-		return "", "", errors.Errorf("The secret '%s' does not contain key '%s'", secretName, secret.Data[context.AnnotationSecretTokenKey])
+		return "", "", errors.Errorf("The secret '%s' does not contain key '%s'", secretName, context.AnnotationSecretTokenKey)
 	}
 	username, usernameDefined := secret.Data[context.AnnotationSecretTokenKey]
 	if _, exists := pod.Annotations[context.AnnotationSecretUserKey]; exists {
