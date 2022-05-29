@@ -19,7 +19,7 @@ Simply clone your scripts repository in your pod workspace, execute script and e
 ### Git clone inside CI job
 
 `git-clone-operator checkout` is a CLI command that could be a replacement of `git clone` and `git checkout`. 
-It's advantage is that it is designed to be running automatic: When repository does not exists, it gets cloned, when exists, then updated with remote.
+Its advantage is that it is designed to be running automatic: When repository does not exist, it gets cloned, when exists, then updated with remote.
 
 
 Setting up
@@ -147,7 +147,7 @@ Roadmap
 
 ### v3
 
-- [ ] Possibly: Reacting on webhooks from Gitea and GitHub to update revision on existing pods (using `kind: Job` with cloned volume definitions from `kind: Pod`, using the same configuration as initContainer)
+- [ ] Possibly: Reacting on webhooks from Gitea and GitHub to update revision on existing pods - deleting marked pods maybe?
 
 Thanks
 ------
