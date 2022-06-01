@@ -74,7 +74,7 @@ jobs:
 
             - name: Create docker tags
               id: meta
-              uses: docker/metadata-action@v3
+              uses: docker/metadata-action@v4
               with:
                   images: ghcr.io/riotkit-org/git-clone-operator
 
