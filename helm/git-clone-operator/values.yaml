@@ -19,6 +19,9 @@ podSecurityContext:
     fsGroup: 65161
     runAsNonRoot: true
 
+webhook:
+    failurePolicy: Fail
+
 serviceAccount:
     create: true
     name: git-clone-operator-sa
