@@ -14,4 +14,4 @@ jobs:
 
         secrets:
             SONAR_TOKEN: "${{ secrets.SONAR_TOKEN }}"
-            #GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+            GH_RW_TOKEN: "${{ secrets.GH_RW_TOKEN }}"
