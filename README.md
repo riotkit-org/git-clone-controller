@@ -18,26 +18,26 @@ Simply clone your scripts repository in your pod workspace, execute script and e
 
 ### Git clone inside CI job
 
-`git-clone-operator checkout` is a CLI command that could be a replacement of `git clone` and `git checkout`. 
+`git-clone-controller checkout` is a CLI command that could be a replacement of `git clone` and `git checkout`. 
 Its advantage is that it is designed to be running automatic: When repository does not exist, it gets cloned, when exists, then updated with remote.
 
 
 Setting up
 ----------
 
-Use helm to install git-clone-operator. For helm values please take a look at [values reference](https://github.com/riotkit-org/git-clone-operator/blob/main/helm/git-clone-operator/values.yaml).
+Use helm to install git-clone-controller. For helm values please take a look at [values reference](https://github.com/riotkit-org/git-clone-controller/blob/main/helm/git-clone-controller/values.yaml).
 
 ```bash
 helm repo add riotkit-org https://riotkit-org.github.io/helm-of-revolution/
-helm install my-git-clone-operator riotkit-org/git-clone-operator
+helm install my-git-clone-controller riotkit-org/git-clone-controller
 ```
 
 Example usage
 -------------
 
-Every `Pod` labelled with `riotkit.org/git-clone-operator: "true"` will be processed by `git-clone-operator`.
+Every `Pod` labelled with `riotkit.org/git-clone-controller: "true"` will be processed by `git-clone-controller`.
 
-`Pod` annotations are the place, where `git-clone-operator` short specification is kept.
+`Pod` annotations are the place, where `git-clone-controller` short specification is kept.
 
 ```yaml
 apiVersion: v1
@@ -46,25 +46,25 @@ metadata:
     name: "tagged-pod"
     labels:
         # required: only labelled Pods are processed
-        riotkit.org/git-clone-operator: "true"
+        riotkit.org/git-clone-controller: "true"
     annotations:
         # required: commit/tag/branch
-        git-clone-operator/revision: main
+        git-clone-controller/revision: main
         # required: http/https url
-        git-clone-operator/url: "https://github.com/jenkins-x/go-scm"
+        git-clone-controller/url: "https://github.com/jenkins-x/go-scm"
         # required: target path, where the repository should be cloned, should be placed on a shared Volume mount point with other containers in same Pod
-        git-clone-operator/path: /workspace/source
+        git-clone-controller/path: /workspace/source
         # optional: user id (will result in adding `securityContext`), in effect: running `git` as selected user and creating files as selected user
-        git-clone-operator/owner: "1000"
-        # optional: group id (will result in adding `securityContext`), same behavior as in "git-clone-operator/owner"
-        git-clone-operator/group: "1000"
+        git-clone-controller/owner: "1000"
+        # optional: group id (will result in adding `securityContext`), same behavior as in "git-clone-controller/owner"
+        git-clone-controller/group: "1000"
         # optional: `kind: Secret` name from same namespace as Pod is (if not specified, then global defaults from operator will be taken, or no authorization would be used)
-        git-clone-operator/secretName: git-secrets
+        git-clone-controller/secretName: git-secrets
         # optional: entry name in `.data` section of selected `kind: Secret`
-        git-clone-operator/secretTokenKey: jenkins-x
+        git-clone-controller/secretTokenKey: jenkins-x
 
         # optional: entry name in `.data` section, describes the GIT username, defaults to __token__ if not specified
-        #git-clone-operator/secretUsernameKey: username
+        #git-clone-controller/secretUsernameKey: username
 spec:
     restartPolicy: Never
     automountServiceAccountToken: false
@@ -83,7 +83,7 @@ spec:
           emptyDir: {}
           
     # PERMISSIONS:
-    #  If `git-clone-operator/owner` and `git-clone-operator/group` specified, then `fsGroup` should have same value there
+    #  If `git-clone-controller/owner` and `git-clone-controller/group` specified, then `fsGroup` should have same value there
     #  so the mounted volume would have proper permissions
     securityContext:
         fsGroup: 1000
@@ -104,17 +104,17 @@ kubectl logs -f tagged-pod
 Behavior
 --------
 
-| Circumstances                                                     | Behavior                                                            |
-|-------------------------------------------------------------------|---------------------------------------------------------------------|
-| Pods NOT marked with `riotkit.org/git-clone-operator: "true"`     | Do Nothing                                                          |
-| Pods MARKED with `riotkit.org/git-clone-operator: "true"`         | Process                                                             |
-| Missing required annotation                                       | Do not schedule that `Pod`                                          |
-| `kind: Secret` was specified, but is invalid                      | Do not schedule that `Pod`                                          |
-| Unknown error while processing labelled `Pod`                     | Do not schedule that `Pod`                                          |
-| GIT credentials are invalid                                       | Fail inside initContainer and don't let Pod's containers to execute |
-| Revision is invalid                                               | Fail inside initContainer and don't let Pod's containers to execute |
-| Volume permissions are invalid                                    | Fail inside initContainer and don't let Pod's containers to execute |
-| Unknown error while trying to checkout/clone inside initContainer | Fail inside initContainer and don't let Pod's containers to execute |
+| Circumstances                                                      | Behavior                                                            |
+|--------------------------------------------------------------------|---------------------------------------------------------------------|
+| Pods NOT marked with `riotkit.org/git-clone-controller: "true"`    | Do Nothing                                                          |
+| Pods MARKED with `riotkit.org/git-clone-controller: "true"`        | Process                                                             |
+| Missing required annotation                                        | Do not schedule that `Pod`                                          |
+| `kind: Secret` was specified, but is invalid                       | Do not schedule that `Pod`                                          |
+| Unknown error while processing labelled `Pod`                      | Do not schedule that `Pod`                                          |
+| GIT credentials are invalid                                        | Fail inside initContainer and don't let Pod's containers to execute |
+| Revision is invalid                                                | Fail inside initContainer and don't let Pod's containers to execute |
+| Volume permissions are invalid                                     | Fail inside initContainer and don't let Pod's containers to execute |
+| Unknown error while trying to checkout/clone inside initContainer  | Fail inside initContainer and don't let Pod's containers to execute |
 
 Security and reliability
 ------------------------
@@ -123,7 +123,7 @@ Security and reliability
 - Static golang binary, without dynamic libraries, no dependency on libc
 - No dependency on `git` binary, thanks to [go-git](https://github.com/go-git/go-git)
 - Namespaced `kind: Secret` are used close to `kind: Pod`
-- Admission Webhooks are [limited in scope on API level](./helm/git-clone-operator/templates/mutatingwebhookconfiguration.yaml) - **only labelled Pods are touched**
+- Admission Webhooks are [limited in scope on API level](./helm/git-clone-controller/templates/mutatingwebhookconfiguration.yaml) - **only labelled Pods are touched**
 - Default Pod's securityContext runs as non-root, with high uid/gid, should work on OpenShift
 - API is using internally mutual TLS to talk with Kubernetes
 
@@ -135,7 +135,7 @@ Roadmap
 - [x] Injecting git-clone initContainers into labelled pods
 - [x] Support for Git over HTTPS
 - [x] Specifying user id (owner) of files in workspace
-- [x] CLI command `git-clone-operator clone ...` and single Dockerfile for both initContainer and operator
+- [x] CLI command `git-clone-controller clone ...` and single Dockerfile for both initContainer and operator
 - [x] Helm
 - [x] Add configurable security context - runAs and filesystem permissions
 

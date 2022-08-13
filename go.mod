@@ -1,4 +1,4 @@
-module github.com/riotkit-org/git-clone-operator
+module github.com/riotkit-org/git-clone-controller
 
 go 1.17
 

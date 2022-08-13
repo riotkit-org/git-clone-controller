@@ -18,22 +18,22 @@ Simply clone your scripts repository in your pod workspace, execute script and e
 
 ### Git clone inside CI job
 
-`git-clone-operator checkout` is a CLI command that could be a replacement of `git clone` and `git checkout`.
+`git-clone-controller checkout` is a CLI command that could be a replacement of `git clone` and `git checkout`.
 It's advantage is that it is designed to be running automatic: When repository does not exists, it gets cloned, when exists, then updated with remote.
 
 
 Setting up
 ----------
 
-Use helm to install git-clone-operator. For helm values please take a look at [values reference](https://github.com/riotkit-org/git-clone-operator/blob/main/helm/git-clone-operator/values.yaml).
+Use helm to install git-clone-controller. For helm values please take a look at [values reference](https://github.com/riotkit-org/git-clone-controller/blob/main/helm/git-clone-controller/values.yaml).
 
 ```bash
 helm repo add riotkit-org https://riotkit-org.github.io/helm-of-revolution/
-helm install my-git-clone-operator riotkit-org/git-clone-operator                
+helm install my-git-clone-controller riotkit-org/git-clone-controller                
 ```
 
 Documentation
 -------------
 
-### [For more documentation please take a look at Github page](https://github.com/riotkit-org/git-clone-operator)
+### [For more documentation please take a look at Github page](https://github.com/riotkit-org/git-clone-controller)
 

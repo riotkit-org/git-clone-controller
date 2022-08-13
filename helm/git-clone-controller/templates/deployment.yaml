@@ -2,14 +2,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: {{ include "git-clone-operator.fullname" . }}
+    name: {{ include "git-clone-controller.fullname" . }}
     labels:
-        {{- include "git-clone-operator.labels" . | nindent 8 }}
+        {{- include "git-clone-controller.labels" . | nindent 8 }}
 spec:
     replicas: {{ .Values.replicas }}
     selector:
         matchLabels:
-            {{- include "git-clone-operator.selectorLabels" . | nindent 10 }}
+            {{- include "git-clone-controller.selectorLabels" . | nindent 10 }}
     template:
         metadata:
           {{- with .Values.podAnnotations }}
@@ -17,13 +17,13 @@ spec:
               {{- toYaml . | nindent 16 }}
           {{- end }}
             labels:
-              {{- include "git-clone-operator.selectorLabels" . | nindent 16 }}
+              {{- include "git-clone-controller.selectorLabels" . | nindent 16 }}
               {{- if eq (.Values.image.tag | default .Chart.AppVersion) "latest" | or (eq (.Values.image.tag | default .Chart.AppVersion) "snapshot") }}
                   refreshImageTag: "{{- randAlphaNum 24 | nospace -}}"
               {{- end }}
         spec:
             terminationGracePeriodSeconds: 5
-            serviceAccountName: {{ include "git-clone-operator.serviceAccountName" . }}
+            serviceAccountName: {{ include "git-clone-controller.serviceAccountName" . }}
             {{- with .Values.podSecurityContext }}
             securityContext:
               {{- toYaml . | nindent 14 }}
@@ -88,4 +88,4 @@ spec:
             volumes:
                 - name: tls
                   secret:
-                      secretName: {{ include "git-clone-operator.fullname" . }}
+                      secretName: {{ include "git-clone-controller.fullname" . }}

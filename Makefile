@@ -19,13 +19,13 @@ coverage:
 .PHONY: minikube-build
 k3d-build:
 	@echo "\n📦 Building simple-kubernetes-webhook Docker image..."
-	docker build -t ${REGISTRY}:${REGISTRY_PORT}/git-clone-operator:master .
-	docker push ${REGISTRY}:${REGISTRY_PORT}/git-clone-operator:master
+	docker build -t ${REGISTRY}:${REGISTRY_PORT}/git-clone-controller:master .
+	docker push ${REGISTRY}:${REGISTRY_PORT}/git-clone-controller:master
 
 .PHONY: minikube-promote
 k3d-promote: build k3d-build
-	helm uninstall gitc -n git-clone-operator --wait || true
-	cd helm/git-clone-operator && helm upgrade --install gitc . -n git-clone-operator --create-namespace --set image.repository=k3d-${REGISTRY}:${REGISTRY_PORT}/git-clone-operator --set image.tag=master
+	helm uninstall gitc -n git-clone-controller --wait || true
+	cd helm/git-clone-controller && helm upgrade --install gitc . -n git-clone-controller --create-namespace --set image.repository=k3d-${REGISTRY}:${REGISTRY_PORT}/git-clone-controller --set image.tag=master
 
 .PHONY: k3d
 k3d:

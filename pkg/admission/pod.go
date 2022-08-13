@@ -3,7 +3,7 @@ package admission
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/riotkit-org/git-clone-operator/pkg/context"
+	"github.com/riotkit-org/git-clone-controller/pkg/context"
 	"github.com/sirupsen/logrus"
 	corev1 "k8s.io/api/core/v1"
 )

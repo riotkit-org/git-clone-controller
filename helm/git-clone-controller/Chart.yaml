@@ -1,5 +1,5 @@
 apiVersion: v2
-name: git-clone-operator
+name: git-clone-controller
 description: "Simple Pod provisioner using GIT as source. Just label your Pods to get an additional initContainer that will clone your repo before Pod will start up."
 type: application
 version: 0.1.0

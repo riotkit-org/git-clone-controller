@@ -37,9 +37,9 @@ func TestGetUrlWithCredentials_GIT(t *testing.T) {
 		Token:    "psst",
 	}
 
-	c.Url = "git@github.com:riotkit-org/git-clone-operator.git"
+	c.Url = "git@github.com:riotkit-org/git-clone-controller.git"
 
 	url, err := c.getUrlWithCredentials()
 	assert.Nil(t, err)
-	assert.Equal(t, "git@github.com:riotkit-org/git-clone-operator.git", url)
+	assert.Equal(t, "git@github.com:riotkit-org/git-clone-controller.git", url)
 }

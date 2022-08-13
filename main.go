@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/riotkit-org/git-clone-operator/cmd"
+	"github.com/riotkit-org/git-clone-controller/cmd"
 	"os"
 )
 

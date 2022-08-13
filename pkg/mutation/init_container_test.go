@@ -1,8 +1,8 @@
 package mutation_test
 
 import (
-	"github.com/riotkit-org/git-clone-operator/pkg/context"
-	"github.com/riotkit-org/git-clone-operator/pkg/mutation"
+	"github.com/riotkit-org/git-clone-controller/pkg/context"
+	"github.com/riotkit-org/git-clone-controller/pkg/mutation"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"

@@ -1,27 +1,27 @@
-{{- $cn := printf "%s.%s.svc" ( include "git-clone-operator.fullname" . ) .Release.Namespace }}
-{{- $ca := genCA "git-clone-operator-admission-ca" 3650 -}}
-{{- $altNames := list ( $cn ) ( include "git-clone-operator.fullname" . ) -}}
+{{- $cn := printf "%s.%s.svc" ( include "git-clone-controller.fullname" . ) .Release.Namespace }}
+{{- $ca := genCA "git-clone-controller-admission-ca" 3650 -}}
+{{- $altNames := list ( $cn ) ( include "git-clone-controller.fullname" . ) -}}
 {{- $cert := genSignedCert $cn nil $altNames 3650 $ca -}}
 
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
-    name: {{ include "git-clone-operator.fullname" . }}
+    name: {{ include "git-clone-controller.fullname" . }}
     namespace: {{ .Release.Namespace }}
     labels:
-        {{- include "git-clone-operator.labels" . | nindent 8 }}
+        {{- include "git-clone-controller.labels" . | nindent 8 }}
 webhooks:
-    - name: {{ include "git-clone-operator.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+    - name: {{ include "git-clone-controller.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
       failurePolicy: {{ .Values.webhook.failurePolicy }}
       {{- if .Values.onlyLabelledNamespaces }}
       namespaceSelector:
           matchLabels:
-              riotkit.org/git-clone-operator: "true"
+              riotkit.org/git-clone-controller: "true"
       {{- end }}
       objectSelector:
           matchLabels:
-              riotkit.org/git-clone-operator: "true"
+              riotkit.org/git-clone-controller: "true"
       rules:
           - apiGroups: [""]
             apiVersions: ["v1"]
@@ -31,7 +31,7 @@ webhooks:
       clientConfig:
           service:
               namespace: {{ .Release.Namespace }}
-              name: {{ include "git-clone-operator.fullname" . }}
+              name: {{ include "git-clone-controller.fullname" . }}
               path: /mutate-pods
               port: 4443
           caBundle: {{ b64enc $ca.Cert }}
@@ -43,7 +43,7 @@ webhooks:
 apiVersion: v1
 kind: Secret
 metadata:
-    name: {{ include "git-clone-operator.fullname" . }}
+    name: {{ include "git-clone-controller.fullname" . }}
 data:
     tls.crt: {{ b64enc $cert.Cert }}
     tls.key: {{ b64enc $cert.Key }}

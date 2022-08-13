@@ -8,14 +8,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
-	appContext "github.com/riotkit-org/git-clone-operator/pkg/context"
+	appContext "github.com/riotkit-org/git-clone-controller/pkg/context"
 	"github.com/wI2L/jsondiff"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 	"net/http"
 
-	"github.com/riotkit-org/git-clone-operator/pkg/mutation"
+	"github.com/riotkit-org/git-clone-controller/pkg/mutation"
 	"github.com/sirupsen/logrus"
 	admissionv1 "k8s.io/api/admission/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -49,13 +49,13 @@ func (a MutationRequest) ProcessAdmissionRequest() (*admissionv1.AdmissionReview
 	}
 	gitUserName, gitToken, secretErr := resolveSecretForPod(context.TODO(), a.Client, pod)
 	if secretErr != nil {
-		return reviewResponse(a.Request.UID, false, http.StatusBadRequest, errors.Wrap(secretErr, "git-clone-operator: Missing `kind: Secret` for annotated Pod").Error()), err
+		return reviewResponse(a.Request.UID, false, http.StatusBadRequest, errors.Wrap(secretErr, "git-clone-controller: Missing `kind: Secret` for annotated Pod").Error()), err
 	}
 
 	// glue parameters together
 	parameters, paramsErr := appContext.NewCheckoutParametersFromPod(pod, a.DefaultImage, a.DefaultGitUsername, a.DefaultGitToken, gitUserName, gitToken)
 	if paramsErr != nil {
-		return reviewResponse(a.Request.UID, false, http.StatusBadRequest, errors.Wrap(paramsErr, "git-clone-operator: Cannot parse Pod labels/annotations").Error()), paramsErr
+		return reviewResponse(a.Request.UID, false, http.StatusBadRequest, errors.Wrap(paramsErr, "git-clone-controller: Cannot parse Pod labels/annotations").Error()), paramsErr
 	}
 
 	// create a patch

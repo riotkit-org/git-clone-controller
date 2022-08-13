@@ -7,7 +7,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/moby/sys/mountinfo"
 	"github.com/pkg/errors"
-	"github.com/riotkit-org/git-clone-operator/pkg/context"
+	"github.com/riotkit-org/git-clone-controller/pkg/context"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/url"

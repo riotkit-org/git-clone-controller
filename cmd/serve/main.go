@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
-	"github.com/riotkit-org/git-clone-operator/pkg/admission"
+	"github.com/riotkit-org/git-clone-controller/pkg/admission"
 	"github.com/sirupsen/logrus"
 	admissionv1 "k8s.io/api/admission/v1"
 	"k8s.io/client-go/kubernetes"

@@ -1,7 +1,7 @@
 package mutation
 
 import (
-	appCtx "github.com/riotkit-org/git-clone-operator/pkg/context"
+	appCtx "github.com/riotkit-org/git-clone-controller/pkg/context"
 	"github.com/sirupsen/logrus"
 	corev1 "k8s.io/api/core/v1"
 	"strconv"
@@ -29,7 +29,7 @@ func injectInitContainer(pod *corev1.Pod, image string, path string, rev string,
 	container := corev1.Container{
 		Name:       InitContainerName,
 		Image:      image,
-		Command:    []string{"/usr/bin/git-clone-operator"},
+		Command:    []string{"/usr/bin/git-clone-controller"},
 		Args:       []string{"checkout", gitUrl, "--path", path, "--rev", rev, "--token", gitToken, "--username", userName},
 		WorkingDir: "/",
 		// EnvFrom:    nil,

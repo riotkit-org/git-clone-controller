@@ -1,7 +1,7 @@
 package checkout_test
 
 import (
-	"github.com/riotkit-org/git-clone-operator/cmd/checkout"
+	"github.com/riotkit-org/git-clone-controller/cmd/checkout"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -20,7 +20,7 @@ func TestCommand_Run(t *testing.T) {
 	c := checkout.Command{
 		LogLevel:       "info",
 		Path:           dir,
-		Url:            "https://github.com/riotkit-org/git-clone-operator",
+		Url:            "https://github.com/riotkit-org/git-clone-controller",
 		Username:       "__token__",
 		Token:          "",
 		Revision:       "main",
@@ -38,7 +38,7 @@ func TestCommand_Run(t *testing.T) {
 	c2 := checkout.Command{
 		LogLevel:       "info",
 		Path:           dir,
-		Url:            "https://github.com/riotkit-org/git-clone-operator",
+		Url:            "https://github.com/riotkit-org/git-clone-controller",
 		Username:       "__token__",
 		Token:          "",
 		Revision:       "69d09e37b8791d106d6c5a62f47e9db0359452ec", // initial commit, only LICENSE and README.md in repository
@@ -55,7 +55,7 @@ func TestCommand_Run(t *testing.T) {
 	c3 := checkout.Command{
 		LogLevel:       "info",
 		Path:           dir,
-		Url:            "https://github.com/riotkit-org/git-clone-operator",
+		Url:            "https://github.com/riotkit-org/git-clone-controller",
 		Username:       "__token__",
 		Token:          "",
 		Revision:       "main", // initial commit, only LICENSE and README.md in repository

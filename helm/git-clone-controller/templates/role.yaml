@@ -2,7 +2,7 @@
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-    name: {{ include "git-clone-operator.fullname" . }}
+    name: {{ include "git-clone-controller.fullname" . }}
 rules:
     # parsing incoming requests
     - apiGroups:
@@ -31,12 +31,12 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-    name: {{ include "git-clone-operator.fullname" . }}
+    name: {{ include "git-clone-controller.fullname" . }}
 roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
-    name: {{ include "git-clone-operator.fullname" . }}
+    name: {{ include "git-clone-controller.fullname" . }}
 subjects:
     - kind: ServiceAccount
-      name: {{ include "git-clone-operator.serviceAccountName" . }}
+      name: {{ include "git-clone-controller.serviceAccountName" . }}
       namespace: {{ .Release.Namespace }}

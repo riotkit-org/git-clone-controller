@@ -1,15 +1,15 @@
 
 image:
-    repository: ghcr.io/riotkit-org/git-clone-operator
+    repository: ghcr.io/riotkit-org/git-clone-controller
     tag: "" # defaults to {{ .Release.appVersion }}
 
-# Only namespaces that has label 'riotkit.org/git-clone-operator: true'
+# Only namespaces that has label 'riotkit.org/git-clone-controller: true'
 onlyLabelledNamespaces: false
 
 tls:
     enabled: true
     createSecret: true
-    secretName: "git-clone-operator-tls"
+    secretName: "git-clone-controller-tls"
         
 replicas: 1
 podAnnotations: {}
@@ -24,7 +24,7 @@ webhook:
 
 serviceAccount:
     create: true
-    name: git-clone-operator-sa
+    name: git-clone-controller-sa
     annotations: {}
 
 env:
