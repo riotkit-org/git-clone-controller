@@ -8,3 +8,6 @@ jobs:
         with:
             binaryName: git-clone-controller
             dockerImage: ghcr.io/riotkit-org/git-clone-controller
+            sonarCloudEnabled: true
+            dockerReleasingEnabled: true
+            publishingHelmChartEnabled: true
