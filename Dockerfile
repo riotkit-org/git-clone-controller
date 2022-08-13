@@ -1,6 +1,6 @@
 FROM alpine:3.14 AS build
 
-ADD .build/git-clone-operator /git-clone-operator
+ADD .build/git-clone-controller /git-clone-operator
 RUN chmod +x /git-clone-operator
 
 # ---

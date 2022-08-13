@@ -3,7 +3,7 @@ on:
     push:
 
 jobs:
-    test-and-build:
+    build:
         uses: riotkit-org/.github/.github/workflows/go-kubernetes.release.yaml@main
         with:
             binaryName: git-clone-controller
