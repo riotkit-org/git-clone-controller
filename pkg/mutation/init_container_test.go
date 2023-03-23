@@ -63,7 +63,7 @@ func TestMutatePodByInjectingInitContainer(t *testing.T) {
 	assert.Equal(t, "ghcr.io/peter/kropotkin", m.Spec.InitContainers[0].Image)
 
 	// this may fail time-to-time if commandline will be changed
-	assert.Equal(t, []string{"checkout", "https://github.com/riotkit-org/backup-repository", "--path", "/workspace/git", "--rev", "main", "--token", "", "--username", ""}, m.Spec.InitContainers[0].Args)
+	assert.Equal(t, []string{"checkout", "https://github.com/riotkit-org/backup-repository", "--path", "/workspace/git", "--rev", "main", "--token", "", "--username", "", "--clean-remotes"}, m.Spec.InitContainers[0].Args)
 
 	// security context
 	runAsRoot := true

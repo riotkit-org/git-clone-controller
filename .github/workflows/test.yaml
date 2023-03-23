@@ -5,13 +5,13 @@ on:
         inputs: {}
 
 jobs:
-    build:
+    build-and-test:
         uses: riotkit-org/.github/.github/workflows/build.go.yaml@release-1
         with:
             goVersion: "1.20"
             binaryName: "git-clone-controller"
 
-#    test:
+#    integration-test:
 #        uses: riotkit-org/.github/.github/workflows/test.integration-tests.yaml@release-1
 #        if: "!startsWith(github.ref, 'refs/tags/v')"
 #        with:
@@ -22,7 +22,7 @@ jobs:
 
     container-image:
         uses: riotkit-org/.github/.github/workflows/release.container.yaml@release-1
-        needs: ["build"]
+        needs: ["build-and-test"]
         if: |
             always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
         with:
