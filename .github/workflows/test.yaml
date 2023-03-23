@@ -1,17 +1,36 @@
 name: Test and release
 on:
     push:
+    workflow_dispatch:
+        inputs: {}
 
 jobs:
-    build:
-        uses: riotkit-org/.github/.github/workflows/go-kubernetes.release.yaml@main
-        with:
-            binaryName: git-clone-controller
-            dockerImage: ghcr.io/riotkit-org/git-clone-controller
-            sonarCloudEnabled: true
-            dockerReleasingEnabled: true
-            publishingHelmChartEnabled: true
+#    test:
+#        uses: riotkit-org/.github/.github/workflows/test.integration-tests.yaml@release-1
+#        if: "!startsWith(github.ref, 'refs/tags/v')"
+#        with:
+#            osVariant: ubuntu-22.04
+#            pythonEnabled: true
+#            testReportEnabled: true
+#            testReportPattern: kuttl-report.xml
 
-        secrets:
-            SONAR_TOKEN: "${{ secrets.SONAR_TOKEN }}"
-            GH_RW_TOKEN: "${{ secrets.GH_RW_TOKEN }}"
+    container-image:
+        uses: riotkit-org/.github/.github/workflows/release.container.yaml@release-1
+#        needs: ["test"]
+#        if: |
+#            always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+        with:
+            osVariant: ubuntu-22.04
+            intermediateArtifactsPath: ""
+            dockerImage: "ghcr.io/riotkit-org/git-clone-controller"
+
+    helm:
+        uses: riotkit-org/.github/.github/workflows/release.helm.yaml@release-1
+        needs: ["container-image"]
+        if: |
+            always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+        with:
+            chartPath: helm/git-clone-controller
+            chartRepoName: "riotkit-org/charts/"
+            chartName: git-clone-controller
+            enableHelmDocs: true
