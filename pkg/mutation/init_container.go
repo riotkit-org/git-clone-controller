@@ -35,6 +35,7 @@ func injectInitContainer(pod *corev1.Pod, image string, path string, rev string,
 		"--rev", rev,
 		"--token", gitToken,
 		"--username", userName,
+		"--clean-remotes",
 	}
 
 	if cleanUpWorkspace {
