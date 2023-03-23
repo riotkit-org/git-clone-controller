@@ -1,6 +1,6 @@
 # git-clone-controller
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main](https://img.shields.io/badge/AppVersion-main-informational?style=flat-square)
+![Version: 0.0-latest-main](https://img.shields.io/badge/Version-0.0--latest--main-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main](https://img.shields.io/badge/AppVersion-main-informational?style=flat-square)
 
 Simple Pod provisioner using GIT as source. Just label your Pods to get an additional initContainer that will clone your repo before Pod will start up.
 
