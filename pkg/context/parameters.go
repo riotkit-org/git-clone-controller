@@ -3,17 +3,19 @@ package context
 import (
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
+	"strings"
 )
 
 type Parameters struct {
-	GitUrl      string
-	GitUsername string
-	GitToken    string
-	GitRevision string
-	FilesOwner  string
-	FilesGroup  string
-	TargetPath  string
-	Image       string
+	GitUrl           string
+	GitUsername      string
+	GitToken         string
+	GitRevision      string
+	FilesOwner       string
+	FilesGroup       string
+	TargetPath       string
+	Image            string
+	CleanUpWorkspace bool
 }
 
 func NewCheckoutParametersFromPod(pod *corev1.Pod, defaultImage string, defaultGitUsername string, defaultGitToken string, secretUsername string, secretGitToken string) (Parameters, error) {
@@ -40,13 +42,14 @@ func NewCheckoutParametersFromPod(pod *corev1.Pod, defaultImage string, defaultG
 		secretGitToken = defaultGitToken
 	}
 	return Parameters{
-		Image:       defaultImage,
-		GitUrl:      pod.Annotations[AnnotationGitUrl],
-		GitRevision: pod.Annotations[AnnotationRev],
-		GitUsername: secretUsername,
-		GitToken:    secretGitToken,
-		TargetPath:  pod.Annotations[AnnotationGitPath],
-		FilesOwner:  pod.Annotations[AnnotationFilesOwner],
-		FilesGroup:  pod.Annotations[AnnotationFilesGroup],
+		Image:            defaultImage,
+		GitUrl:           pod.Annotations[AnnotationGitUrl],
+		GitRevision:      pod.Annotations[AnnotationRev],
+		GitUsername:      secretUsername,
+		GitToken:         secretGitToken,
+		TargetPath:       pod.Annotations[AnnotationGitPath],
+		FilesOwner:       pod.Annotations[AnnotationFilesOwner],
+		FilesGroup:       pod.Annotations[AnnotationFilesGroup],
+		CleanUpWorkspace: strings.ToLower(strings.Trim(pod.Annotations[AnnotationCleanUp], " ")) != "false",
 	}, nil
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/riotkit-org/git-clone-controller/pkg/context"
 	"github.com/sirupsen/logrus"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"strings"
@@ -17,14 +16,15 @@ import (
 )
 
 type Command struct {
-	LogLevel       string
-	Path           string
-	Url            string
-	Username       string
-	Token          string
-	Revision       string
-	IsBare         bool
-	CleanUpRemotes bool
+	LogLevel         string
+	Path             string
+	Url              string
+	Username         string
+	Token            string
+	Revision         string
+	IsBare           bool
+	CleanUpRemotes   bool
+	CleanUpWorkspace bool
 }
 
 func (c *Command) Run() error {
@@ -78,13 +78,14 @@ func (c *Command) inspectEnvironment() {
 // listDirectory lists files and directories in given path, the listing includes permissions
 func (c *Command) listDirectory(dirPath string) {
 	logrus.Infof("Looking around in '%s' (annotation: %s)", dirPath, context.AnnotationGitPath)
-	paths, err := ioutil.ReadDir(dirPath)
+	paths, err := os.ReadDir(dirPath)
 	if err != nil {
 		logrus.Errorln(err)
 	}
 	for _, path := range paths {
-		stat := path.Sys().(*syscall.Stat_t)
-		logrus.Infof(" > [%v %v:%v] %s", path.Mode().String(), stat.Uid, stat.Gid, path.Name())
+		info, _ := path.Info()
+		stat := info.Sys().(*syscall.Stat_t)
+		logrus.Infof(" > [%v %v:%v] %s", info.Mode().String(), stat.Uid, stat.Gid, path.Name())
 	}
 }
 
@@ -113,6 +114,17 @@ func (c *Command) checkout(url string) (*git.Repository, error) {
 			branch = plumbing.ReferenceName(refName)
 		} else {
 			hash = plumbing.NewHash(refName)
+		}
+
+		// remove non-staged changes
+		if c.CleanUpWorkspace {
+			logrus.Info("Cleaning up workspace out of untracked files")
+			if resetErr := w.Reset(&git.ResetOptions{Mode: git.HardReset}); resetErr != nil {
+				logrus.Warningf("Failed to perform `git reset` on workspace: %s", resetErr.Error())
+			}
+			if cleanUpErr := w.Clean(&git.CleanOptions{}); cleanUpErr != nil {
+				logrus.Warningf("Failed to clean up workspace: %s", cleanUpErr.Error())
+			}
 		}
 
 		logrus.Infof("Doing checkout: hash=%v, branch=%v", hash, branch)

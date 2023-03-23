@@ -65,6 +65,9 @@ metadata:
 
         # optional: entry name in `.data` section, describes the GIT username, defaults to __token__ if not specified
         #git-clone-controller/secretUsernameKey: username
+
+        # optional: Disable cleaning up untracked and unstaged files (git clean + git reset)
+        # git-clone-controller/cleanWorkspace: "false"
 spec:
     restartPolicy: Never
     automountServiceAccountToken: false
@@ -104,17 +107,18 @@ kubectl logs -f tagged-pod
 Behavior
 --------
 
-| Circumstances                                                      | Behavior                                                            |
-|--------------------------------------------------------------------|---------------------------------------------------------------------|
-| Pods NOT marked with `riotkit.org/git-clone-controller: "true"`    | Do Nothing                                                          |
-| Pods MARKED with `riotkit.org/git-clone-controller: "true"`        | Process                                                             |
-| Missing required annotation                                        | Do not schedule that `Pod`                                          |
-| `kind: Secret` was specified, but is invalid                       | Do not schedule that `Pod`                                          |
-| Unknown error while processing labelled `Pod`                      | Do not schedule that `Pod`                                          |
-| GIT credentials are invalid                                        | Fail inside initContainer and don't let Pod's containers to execute |
-| Revision is invalid                                                | Fail inside initContainer and don't let Pod's containers to execute |
-| Volume permissions are invalid                                     | Fail inside initContainer and don't let Pod's containers to execute |
-| Unknown error while trying to checkout/clone inside initContainer  | Fail inside initContainer and don't let Pod's containers to execute |
+| Circumstances                                                      | Behavior                                                              |
+|--------------------------------------------------------------------|-----------------------------------------------------------------------|
+| Pods NOT marked with `riotkit.org/git-clone-controller: "true"`    | Do Nothing                                                            |
+| Pods MARKED with `riotkit.org/git-clone-controller: "true"`        | Process                                                               |
+| Missing required annotation                                        | Do not schedule that `Pod`                                            |
+| `kind: Secret` was specified, but is invalid                       | Do not schedule that `Pod`                                            |
+| Unknown error while processing labelled `Pod`                      | Do not schedule that `Pod`                                            |
+| GIT credentials are invalid                                        | Fail inside initContainer and don't let Pod's containers to execute   |
+| Revision is invalid                                                | Fail inside initContainer and don't let Pod's containers to execute   |
+| Volume permissions are invalid                                     | Fail inside initContainer and don't let Pod's containers to execute   |
+| Unknown error while trying to checkout/clone inside initContainer  | Fail inside initContainer and don't let Pod's containers to execute   |
+| There are unknown files in GIT workspace                           | Perform `git reset` and `git clean` (can be disabled with annotation) | 
 
 Security and reliability
 ------------------------

@@ -20,17 +20,32 @@ func MutatePodByInjectingInitContainer(pod *corev1.Pod, logger logrus.FieldLogge
 		return mutatedPod, nil
 	}
 
-	injectInitContainer(mutatedPod, params.Image, params.TargetPath, params.GitRevision, params.GitUrl, params.GitToken, params.GitUsername, params.FilesOwner, params.FilesGroup)
+	injectInitContainer(mutatedPod, params.Image, params.TargetPath, params.GitRevision, params.GitUrl, params.GitToken, params.GitUsername, params.FilesOwner, params.FilesGroup, params.CleanUpWorkspace)
 	return mutatedPod, nil
 }
 
 // injectInitContainer injects an initContainer
-func injectInitContainer(pod *corev1.Pod, image string, path string, rev string, gitUrl string, gitToken string, userName string, owner string, group string) {
+func injectInitContainer(pod *corev1.Pod, image string, path string, rev string, gitUrl string, gitToken string,
+	userName string, owner string, group string, cleanUpWorkspace bool) {
+
+	args := []string{
+		"checkout",
+		gitUrl,
+		"--path", path,
+		"--rev", rev,
+		"--token", gitToken,
+		"--username", userName,
+	}
+
+	if cleanUpWorkspace {
+		args = append(args, "--clean-workspace")
+	}
+
 	container := corev1.Container{
 		Name:       InitContainerName,
 		Image:      image,
 		Command:    []string{"/usr/bin/git-clone-controller"},
-		Args:       []string{"checkout", gitUrl, "--path", path, "--rev", rev, "--token", gitToken, "--username", userName},
+		Args:       args,
 		WorkingDir: "/",
 		// EnvFrom:    nil,
 		VolumeMounts: mergeVolumeMounts(pod.Spec.Containers, path),
