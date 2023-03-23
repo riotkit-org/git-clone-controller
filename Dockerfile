@@ -1,4 +1,4 @@
-FROM alpine:3.14 AS build
+FROM alpine:3.17 AS build
 
 ADD .build/git-clone-controller /git-clone-controller
 RUN chmod +x /git-clone-controller
