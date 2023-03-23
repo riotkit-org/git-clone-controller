@@ -1,5 +1,5 @@
-GIT clone operator
-==================
+GIT clone controller
+====================
 
 Mutation webhook handler, injects initContainer with a properly configured `git` container that does a clone or checkout, taking care about permissions.
 
