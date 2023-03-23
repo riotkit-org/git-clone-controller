@@ -38,3 +38,11 @@ jobs:
             chartRepoName: "riotkit-org/charts/"
             chartName: git-clone-controller
             enableHelmDocs: true
+
+    release-binary:
+        uses: riotkit-org/.github/.github/workflows/release.binary.yaml@release-1
+        needs: ["build-and-test"]
+        if: |
+            always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+        with:
+            binaryName: "git-clone-controller"
