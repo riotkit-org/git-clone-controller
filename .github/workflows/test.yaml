@@ -22,9 +22,9 @@ jobs:
 
     container-image:
         uses: riotkit-org/.github/.github/workflows/release.container.yaml@release-1
-#        needs: ["test"]
-#        if: |
-#            always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+        needs: ["build"]
+        if: |
+            always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
         with:
             osVariant: ubuntu-22.04
             dockerImage: "ghcr.io/riotkit-org/git-clone-controller"
