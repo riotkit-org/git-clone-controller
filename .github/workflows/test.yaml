@@ -5,6 +5,12 @@ on:
         inputs: {}
 
 jobs:
+    build:
+        uses: riotkit-org/.github/.github/workflows/build.go.yaml@release-1
+        with:
+            goVersion: 1.20
+            binaryName: "git-clone-controller"
+
 #    test:
 #        uses: riotkit-org/.github/.github/workflows/test.integration-tests.yaml@release-1
 #        if: "!startsWith(github.ref, 'refs/tags/v')"
@@ -21,7 +27,6 @@ jobs:
 #            always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
         with:
             osVariant: ubuntu-22.04
-            intermediateArtifactsPath: ""
             dockerImage: "ghcr.io/riotkit-org/git-clone-controller"
 
     helm:
