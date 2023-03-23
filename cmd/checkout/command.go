@@ -34,7 +34,7 @@ func NewCheckoutCommand() *cobra.Command {
 	command.Flags().StringVarP(&app.Token, "token", "t", "", "GIT basic auth token/password")
 	command.Flags().StringVarP(&app.Revision, "rev", "r", "", "GIT revision - commit/branch/tag (defaults to: main)")
 	command.Flags().BoolVarP(&app.CleanUpRemotes, "clean-remotes", "", true, "Delete `git remote` from local repository to prevent token leak")
-	command.Flags().BoolVarP(&app.CleanUpWorkspace, "clean-workspace", "", true, "Cleans up workspace (deletes all unstaged and external changes)")
+	command.Flags().BoolVarP(&app.CleanUpWorkspace, "clean-workspace", "c", true, "Cleans up workspace (deletes all unstaged and external changes)")
 	app.IsBare = false
 
 	return command
